@@ -1,0 +1,14 @@
+get_version_retries = 3
+ping_retries = 3
+ping_timeout = 3 # Seconds
+scan_threads = 300
+config_threads = 300
+reboot_threads = 300
+
+logfile = true
+
+### DEBUG MODE ###
+# change this to debug = true
+# to enable debug mode.
+debug = false
+# debug = true
