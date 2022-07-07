@@ -121,7 +121,7 @@ TABLE_HEADERS = {
         "Pool 2",
         "Pool 2 User",
     ],
-    "CONFIG": ["IP", "Model", "Pool 1 User", "Wattage"],
+    "CONFIG": ["IP", "Model", "Pool 1 User", "Power Limit"],
 }
 
 TABLE_KEYS = {
@@ -184,6 +184,7 @@ SPLIT_COL_WIDTH = 8
 TOTAL_CHIP_WIDTH = 9
 IDEAL_CHIP_WIDTH = 9
 CHIP_PERCENT_WIDTH = 10
+POWER_LIMIT_WIDTH = 12
 SCAN_COL_WIDTHS = [
     IP_COL_WIDTH,
     MODEL_COL_WIDTH,
@@ -626,8 +627,8 @@ def get_config_layout():
     CFG_COL_WIDTHS = [
         IP_COL_WIDTH,
         MODEL_COL_WIDTH,
-        TABLE_TOTAL_WIDTH - ((30 * 2) + (6 + WATTAGE_COL_WIDTH)),
-        WATTAGE_COL_WIDTH,
+        TABLE_TOTAL_WIDTH - ((30 * 2) + (6 + POWER_LIMIT_WIDTH)),
+        POWER_LIMIT_WIDTH,
     ]
     config_layout = [
         [

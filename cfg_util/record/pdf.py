@@ -19,7 +19,7 @@ from reportlab.platypus import (
 )
 from svglib.svglib import svg2rlg
 
-from data import MinerData
+from pyasic.data import MinerData
 
 
 async def generate_pdf(data: Dict[str, List[MinerData]], file_loc):
