@@ -28,9 +28,8 @@ setup(
             "build_exe": f"{os.getcwd()}\\build\\UpstreamCFGUtil-{version}-{sys.platform}\\",
             "include_files": [
                 os.path.join(os.getcwd(), "settings/settings.toml"),
-                os.path.join(os.getcwd(), "static/CFG-Util-README.md"),
+                os.path.join(os.getcwd(), "README.md"),
             ],
-            "excludes": ["tests", "tools.web_testbench", "tools.web_monitor"],
         },
     },
     executables=[
