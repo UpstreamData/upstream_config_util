@@ -1,7 +1,7 @@
 import asyncio
 import webbrowser
 
-from miner_interface.miners.miner_factory import MinerFactory
+from pyasic.miners.miner_factory import MinerFactory
 from cfg_util.decorators import disable_buttons
 from cfg_util.layout import TABLE_KEYS
 from cfg_util.layout import window, update_prog_bar, TABLE_HEADERS

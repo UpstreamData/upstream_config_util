@@ -26,7 +26,7 @@ from reportlab.platypus import (
 )
 from svglib.svglib import svg2rlg
 
-from miner_interface.miners.miner_factory import MinerFactory
+from pyasic.miners.miner_factory import MinerFactory
 from cfg_util.decorators import disable_buttons
 from cfg_util.imgs import IMAGE_SELECTION_MATRIX, LOGO
 from cfg_util.tables import TableManager

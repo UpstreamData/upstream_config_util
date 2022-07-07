@@ -1,5 +1,5 @@
-from miner_interface.miners.miner_factory import MinerFactory
-from miner_interface.miners.miner_listener import MinerListener
+from pyasic.miners.miner_factory import MinerFactory
+from pyasic.miners.miner_listener import MinerListener
 from cfg_util.layout import window, update_prog_bar, WINDOW_ICON
 from cfg_util.tables import TableManager
 from cfg_util.decorators import disable_buttons

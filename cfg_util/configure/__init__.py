@@ -2,8 +2,8 @@ import asyncio
 
 import PySimpleGUI as sg
 
-from miner_interface.config import MinerConfig
-from miner_interface.miners.miner_factory import MinerFactory
+from pyasic.config import MinerConfig
+from pyasic.miners.miner_factory import MinerFactory
 from settings import CFG_UTIL_CONFIG_THREADS as CONFIG_THREADS
 from cfg_util.decorators import disable_buttons
 from cfg_util.general import update_miners_data
