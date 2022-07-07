@@ -34,7 +34,7 @@ setup(
     },
     executables=[
         Executable(
-            "config_tool.py",
+            "main.py",
             base=base,
             icon="icon.ico",
             target_name="UpstreamCFGUtil.exe",
