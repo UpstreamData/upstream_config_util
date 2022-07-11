@@ -8,12 +8,13 @@
 
 
 # CFG-Util
-
+[Click here to get a windows build.](https://drive.google.com/drive/folders/1DjR8UOS_g0ehfiJcgmrV0FFoqFvE9akW?usp=sharing)
 ## Interact with bitcoin mining ASICs using a simple GUI.
 
 ---
 ## Tabs:
 * Scan
+* Boards
 * Pools
 * Configure
 * Command
@@ -28,7 +29,14 @@
 * ALL: Select all items in the table (You can also select the table and press CTRL+A).
 * REFRESH DATA: Refresh the data for the miners in the table.
 * OPEN IN WEB: Open all selected miners in your web browser.
+* RECORD DATA: Open the record data window.
 
+### Boards Tab -
+#### Buttons
+* Create Report: Create a report about the status of all selected miners hashboards.
+* ALL: Select all items in the table (You can also select the table and press CTRL+A).
+* REFRESH DATA: Refresh the data for the miners in the table.
+* OPEN IN WEB: Open all selected miners in your web browser.
 
 ### Pools Tab -
 #### Additional Tabs
