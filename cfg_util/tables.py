@@ -252,6 +252,8 @@ class TableManager(metaclass=Singleton):
 
     def clear_tables(self):
         self.data = {}
+        window["total_hashrate"].update("Hashrate: 0 TH/s")
+        window["miner_count"].update("Miners: 0")
         for table in TABLE_KEYS["table"]:
             window[table].update([])
         for tree in TABLE_KEYS["tree"]:
