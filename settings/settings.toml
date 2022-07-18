@@ -1,11 +1,12 @@
-get_version_retries = 3
-ping_retries = 3
+get_version_retries = 1
+miner_get_data_retries = 1
+ping_retries = 1
 ping_timeout = 3 # Seconds
 scan_threads = 300
 config_threads = 300
 reboot_threads = 300
 
-logfile = true
+logfile = false
 
 ### DEBUG MODE ###
 # change this to debug = true
