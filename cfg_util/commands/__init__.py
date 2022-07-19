@@ -3,7 +3,7 @@ from pyasic.miners.miner_listener import MinerListener
 from cfg_util.layout import window, update_prog_bar, WINDOW_ICON
 from cfg_util.tables import TableManager
 from cfg_util.decorators import disable_buttons
-from settings import CFG_UTIL_CONFIG_THREADS as COMMAND_THREADS
+from settings import CFG_UTIL_CONFIG_THREADS as COMMAND_THREADS, REBOOT_THREADS
 from typing import Tuple
 
 import PySimpleGUI as sg
@@ -49,16 +49,46 @@ async def btn_reboot(ip_idxs: list):
     table_manager = TableManager()
     _table = window["cmd_table"].Widget
     iids = _table.get_children()
+    miners = []
     for idx in ip_idxs:
         item = _table.item(iids[idx])
         ip = item["values"][0]
         miner = await MinerFactory().get_miner(ip)
-        success = await miner.reboot()
-        if success:
-            table_manager.data[ip]["Output"] = "Reboot command succeeded."
-        else:
-            table_manager.data[ip]["Output"] = "Reboot command failed."
-    table_manager.update_tables()
+        miners.append(miner)
+        for idx in ip_idxs:
+            item = _table.item(iids[idx])
+            ip = item["values"][0]
+            miner = await MinerFactory().get_miner(ip)
+            miners.append(miner)
+
+        sent = reboot_generator(miners)
+        async for done in sent:
+            success = done["Status"]
+            if success:
+                table_manager.data[ip]["Output"] = "Reboot command succeeded."
+            else:
+                table_manager.data[ip]["Output"] = "Reboot command failed."
+            table_manager.update_tables()
+
+
+async def reboot_generator(miners: list):
+    loop = asyncio.get_event_loop()
+    reboot_tasks = []
+    for miner in miners:
+        if len(reboot_tasks) >= REBOOT_THREADS:
+            cmd_sent = asyncio.as_completed(reboot_tasks)
+            reboot_tasks = []
+            for done in cmd_sent:
+                yield await done
+        reboot_tasks.append(loop.create_task(_reboot(miner)))
+    cmd_sent = asyncio.as_completed(reboot_tasks)
+    for done in cmd_sent:
+        yield await done
+
+
+async def _reboot(miner):
+    proc = await miner.reboot()
+    return {"IP": miner.ip, "Status": proc}
 
 
 @disable_buttons("Restarting Backend")

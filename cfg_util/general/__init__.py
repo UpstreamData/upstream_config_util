@@ -64,8 +64,12 @@ async def update_miners_data(miners: list):
     global progress_bar_len
     progress_bar_len = 0
     await update_prog_bar(progress_bar_len, _max=len(miners))
+    _miners = []
+    async for miner in MinerFactory().get_miner_generator(miners):
+        _miners.append(miner)
+
     data_generator = asyncio.as_completed(
-        [_get_data(await MinerFactory().get_miner(miner)) for miner in miners]
+        [_get_data(miner) for miner in _miners]
     )
     for all_data in data_generator:
         data = await all_data

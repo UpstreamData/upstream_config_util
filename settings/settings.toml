@@ -1,4 +1,4 @@
-get_version_retries = 1
+get_version_retries = 3
 miner_get_data_retries = 1
 ping_retries = 1
 ping_timeout = 3 # Seconds
