@@ -233,6 +233,7 @@ class TableManager(metaclass=Singleton):
             "Left Board",
             "Center Board",
             "Right Board",
+            "Power Limit"
         ]:
             if isinstance(self.data[data_key][self.sort_key], str):
                 return -300
