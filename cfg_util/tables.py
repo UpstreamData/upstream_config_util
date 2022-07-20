@@ -28,7 +28,8 @@ DATA_HEADER_MAP = {
     "pool_2_url": "Pool 2",
     "pool_2_user": "Pool 2 User",
     "percent_ideal": "Chip %",
-    "wattage_limit": "Power Limit"
+    "wattage_limit": "Power Limit",
+    "fault_light": "Light"
 }
 
 
