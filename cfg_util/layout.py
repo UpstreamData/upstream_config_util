@@ -227,6 +227,13 @@ def get_scan_layout():
                 mouseover_colors=BTN_DISABLED,
                 bind_return_key=True,
             ),
+            sg.Button(
+                "Cancel",
+                key="scan_cancel",
+                border_width=BTN_BORDER,
+                mouseover_colors=BTN_DISABLED,
+                visible=False,
+            ),
         ],
         [
             sg.Button(

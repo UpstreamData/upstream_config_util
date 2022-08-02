@@ -3,7 +3,7 @@ import asyncio
 import sys
 from cfg_util.boards import boards_report
 from cfg_util.imgs import TkImages
-from cfg_util.scan import btn_scan
+from cfg_util.scan import btn_scan, scan_cancel
 from cfg_util.commands import (
     btn_light,
     btn_reboot,
@@ -126,6 +126,8 @@ async def ui():
             asyncio.create_task(btn_refresh(_table, value[_table]))
         if event == "btn_scan":
             asyncio.create_task(btn_scan(value["scan_ip"]))
+        if event == "scan_cancel":
+            await scan_cancel()
         if event == "record":
             _table = "scan_table"
             if value[_table]:
