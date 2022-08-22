@@ -54,15 +54,22 @@ async def send_config(ips: list, config: str, last_octet_ip: bool):
 async def send_config_generator(miners: list, config, last_octet_ip_user: bool):
     loop = asyncio.get_event_loop()
     config_tasks = []
+    config = MinerConfig().from_yaml(config)
     for miner in miners:
         if len(config_tasks) >= CONFIG_THREADS:
             configured = asyncio.as_completed(config_tasks)
             config_tasks = []
             for sent_config in configured:
                 yield await sent_config
-        config_tasks.append(
-            loop.create_task(miner.send_config(config, ip_user=last_octet_ip_user))
-        )
+        if last_octet_ip_user:
+            suffix = f"x{miner.ip.split('.')[-1]}"
+            config_tasks.append(
+                loop.create_task(miner.send_config(config, user_suffix=suffix))
+            )
+        else:
+            config_tasks.append(
+                loop.create_task(miner.send_config(config))
+            )
     configured = asyncio.as_completed(config_tasks)
     for sent_config in configured:
         yield await sent_config
