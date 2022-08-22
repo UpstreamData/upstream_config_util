@@ -88,11 +88,15 @@ async def boards_report(file_location):
             "Center Chips": line["Center Board"],
             "Right Chips": line["Right Board"],
             "Nominal": round((line["Ideal"] / 3) * 0.9),
+            "Wattage": line["Wattage"],
+            "Power Limit": line["Power Limit"],
+            "Hashrate": float((line["Hashrate"].strip()).replace(" TH/s", "")),
         }
 
     async for miner in MinerFactory().get_miner_generator([key for key in data.keys()]):
         if miner:
             data[str(miner.ip)]["Nominal"] = round(miner.nominal_chips * 0.9)
+
 
     list_data = []
     for ip in data.keys():
@@ -103,7 +107,6 @@ async def boards_report(file_location):
     list_data = sorted(
         list_data, reverse=False, key=lambda x: ipaddress.ip_address(x["IP"])
     )
-
     image_selection_data = {}
     for miner in list_data:
         miner_bad_boards = ""
@@ -125,7 +128,7 @@ async def boards_report(file_location):
         title=f"Board Report {datetime.datetime.now().strftime('%Y/%b/%d')}",
     )
 
-    pie_chart, board_table = create_boards_pie_chart(image_selection_data)
+    pie_chart, board_table = create_boards_pie_chart(image_selection_data, list_data)
 
     table_data = get_table_data(image_selection_data)
 
@@ -165,6 +168,7 @@ async def boards_report(file_location):
         ),
         create_data_table(list_data),
         PageBreak(),
+        # create_recommendations_page(),
     ]
 
     doc.build(
@@ -174,11 +178,43 @@ async def boards_report(file_location):
     )
 
 
-def create_boards_pie_chart(data):
+def create_boards_pie_chart(data, list_data: list):
     labels = ["All Working", "1 Bad Board", "2 Bad Boards", "3 Bad Boards"]
     num_bad_boards = [0, 0, 0, 0]
+    est_wattage = [0, 0, 0, 0]
+    est_missing_wattage = [0, 0, 0, 0]
+    est_hashrate = [0, 0, 0, 0]
+    est_missing_hashrate = [0, 0, 0, 0]
+    efficiency = [0, 0, 0, 0]
     for item in data.keys():
         num_bad_boards[len(data[item])] += 1
+        est_total_wattage = 0
+        est_total_hashrate = 0
+        power_limit = 0
+        for list_data_item in list_data:
+            if list_data_item["IP"] == item:
+                est_total_wattage = list_data_item["Wattage"]
+                est_total_hashrate = list_data_item["Hashrate"]
+                power_limit = list_data_item["Power Limit"]
+        est_wattage[len(data[item])] += est_total_wattage
+        est_missing_wattage[len(data[item])] += power_limit-est_total_wattage
+        est_hashrate[len(data[item])] += round(est_total_hashrate)
+    for idx in range(4):
+        efficiency[idx] = f"{round(est_wattage[idx]/(est_hashrate[idx]+1))} W/TH"
+        if not idx == 0 and not idx == 3:
+            est_missing_hashrate[idx] = round(est_missing_wattage[idx]/((round(est_wattage[idx] / (est_hashrate[idx] + 1)+1))))
+        if idx == 3:
+            eff_data = [int(efficiency[0].replace(" W/TH", "")), int(efficiency[1].replace(" W/TH", "")), int(efficiency[2].replace(" W/TH", ""))]
+            avg_eff = sum(eff_data)/len(eff_data)
+            est_missing_hashrate[idx] = round(est_missing_wattage[idx]/avg_eff)
+
+        if est_wattage[idx] > 10000:
+            est_wattage[idx] = f"{round(est_wattage[idx]/1000, 2)} kW"
+        else:
+            est_wattage[idx] = f"{est_wattage[idx]} W"
+        est_missing_wattage[idx] = f"{est_missing_wattage[idx]} W"
+        est_hashrate[idx] = f"{est_hashrate[idx]} TH/s"
+        est_missing_hashrate[idx] = f"{est_missing_hashrate[idx]} TH/s"
     idxs = []
     graph_labels = copy(labels)
     graph_num_bad_board = copy(num_bad_boards)
@@ -206,7 +242,7 @@ def create_boards_pie_chart(data):
         pctdistance=0.8,
     )
     ax.axis("equal")
-    ax.set_title("Broken Boards", fontsize=24, pad=20)
+    ax.set_title("Miner Status", fontsize=24, pad=20)
 
     imgdata = BytesIO()
     fig.savefig(imgdata, format="svg")
@@ -215,7 +251,15 @@ def create_boards_pie_chart(data):
     imgdata.close()
     plt.close("all")
     pie_chart = KeepInFrame(375, 375, [Image(drawing)], hAlign="CENTER")
-    table_data = [labels, num_bad_boards]
+    table_data = [
+        ["-", *labels],
+        ["Miners", *num_bad_boards],
+        ["Est. Watts", *est_wattage],
+        ["Est. Missing Watts", *est_missing_wattage],
+        ["Est. Hashrate", *est_hashrate],
+        ["Est. Missing Hashrate", *est_missing_hashrate],
+        ["Efficiency", *efficiency]
+    ]
 
     t = Table(table_data)
 
@@ -236,6 +280,11 @@ def create_boards_pie_chart(data):
             ("RIGHTPADDING", (0, 0), (-1, -1), 3),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
             ("TOPPADDING", (0, 0), (-1, -1), 3),
+            # color the table
+            ("TEXTCOLOR", (4, 1), (4, -1), colors.red),
+            ("TEXTCOLOR", (3, 1), (3, -1), colors.orangered),
+            ("TEXTCOLOR", (2, 1), (2, -1), colors.yellow),
+            ("TEXTCOLOR", (1, 1), (1, -1), colors.green),
         ]
     )
 
@@ -244,9 +293,9 @@ def create_boards_pie_chart(data):
     # zebra stripes on table
     for each in range(len(table_data)):
         if each % 2 == 0:
-            bg_color = colors.whitesmoke
-        else:
             bg_color = colors.lightgrey
+        else:
+            bg_color = colors.darkgrey
 
         t.setStyle(TableStyle([("BACKGROUND", (0, each), (-1, each), bg_color)]))
 
@@ -358,9 +407,9 @@ def create_data_table(data):
     # zebra stripes on table
     for each in range(len(table_data)):
         if each % 2 == 0:
-            bg_color = colors.whitesmoke
-        else:
             bg_color = colors.lightgrey
+        else:
+            bg_color = colors.darkgrey
 
         t.setStyle(TableStyle([("BACKGROUND", (0, each), (-1, each), bg_color)]))
 
@@ -402,3 +451,6 @@ def get_table_data(data):
     if not table_row == []:
         table_elems.append(table_row)
     return table_elems
+
+def create_recommendations_page(data: list):
+    return None
