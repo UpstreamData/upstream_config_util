@@ -39,7 +39,7 @@ DEFAULT_DATA = set()
 
 for table in TABLE_HEADERS:
     for header in TABLE_HEADERS[table]:
-        DEFAULT_DATA.add(header)
+        DEFAULT_DATA.add(TABLE_HEADERS[table][header])
 
 
 async def scan_cancel():
@@ -96,7 +96,7 @@ async def _scan_miners(network: MinerNetwork):
                 _data = {}
                 for key in DEFAULT_DATA:
                     _data[key] = ""
-                _data["IP"] = str(miner.ip)
+                _data["ip"] = str(miner.ip)
                 TableManager().update_item(_data)
 
                 # create a task to get data, and save it to ensure it finishes
@@ -126,9 +126,4 @@ async def _get_miner_data(miner):
 
 
 async def _get_data(miner):
-    _data = (await miner.get_data()).asdict()
-    data = {}
-    for item in _data.keys():
-        if item in DATA_HEADER_MAP.keys():
-            data[DATA_HEADER_MAP[item]] = _data[item]
-    return data
+    return (await miner.get_data()).asdict()
