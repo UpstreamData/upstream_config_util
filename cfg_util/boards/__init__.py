@@ -31,6 +31,8 @@ from cfg_util.decorators import disable_buttons
 from cfg_util.imgs import IMAGE_SELECTION_MATRIX, LOGO
 from cfg_util.tables import TableManager
 
+CHIP_PCT_IDEAL = 0.9
+
 IP_STYLE = ParagraphStyle(
     "IP Style",
     alignment=TA_CENTER,
@@ -77,46 +79,34 @@ def add_page_header(canvas, doc):
 @disable_buttons("Exporting Report")
 async def boards_report(file_location):
     p1_logo, p1_title = create_first_page()
-    data = {}
     table_manager = TableManager()
-    for key in table_manager.data.keys():
-        line = table_manager.data[key]
-        data[line["IP"]] = {
-            "Model": line["Model"],
-            "Total Chips": line["Total"],
-            "Left Chips": line["Left Board"],
-            "Center Chips": line["Center Board"],
-            "Right Chips": line["Right Board"],
-            "Nominal": round((line["Ideal"] / 3) * 0.9),
-            "Wattage": line["Wattage"],
-            "Power Limit": line["Power Limit"],
-            "Hashrate": float((line["Hashrate"].strip()).replace(" TH/s", "")),
-        }
 
-    async for miner in MinerFactory().get_miner_generator([key for key in data.keys()]):
-        if miner:
-            data[str(miner.ip)]["Nominal"] = round(miner.nominal_chips * 0.9)
+    data = copy(table_manager.data)
+
+    for ip in data:
+        data[ip]["hashrate"] = float(data[ip]["hashrate"].replace("TH/s", "").strip())
+
 
 
     list_data = []
     for ip in data.keys():
         new_data = data[ip]
-        new_data["IP"] = ip
+        new_data["ip"] = ip
         list_data.append(new_data)
 
     list_data = sorted(
-        list_data, reverse=False, key=lambda x: ipaddress.ip_address(x["IP"])
+        list_data, reverse=False, key=lambda x: ipaddress.ip_address(x["ip"])
     )
     image_selection_data = {}
     for miner in list_data:
         miner_bad_boards = ""
-        if miner["Left Chips"] < miner["Nominal"]:
+        if miner["left_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
             miner_bad_boards += "l"
-        if miner["Center Chips"] < miner["Nominal"]:
+        if miner["center_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
             miner_bad_boards += "c"
-        if miner["Right Chips"] < miner["Nominal"]:
+        if miner["right_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
             miner_bad_boards += "r"
-        image_selection_data[miner["IP"]] = miner_bad_boards
+        image_selection_data[miner["ip"]] = miner_bad_boards
 
     doc = SimpleDocTemplate(
         file_location,
@@ -192,10 +182,10 @@ def create_boards_pie_chart(data, list_data: list):
         est_total_hashrate = 0
         power_limit = 0
         for list_data_item in list_data:
-            if list_data_item["IP"] == item:
-                est_total_wattage = list_data_item["Wattage"]
-                est_total_hashrate = list_data_item["Hashrate"]
-                power_limit = list_data_item["Power Limit"]
+            if list_data_item["ip"] == item:
+                est_total_wattage = list_data_item["wattage"]
+                est_total_hashrate = list_data_item["hashrate"]
+                power_limit = list_data_item["wattage_limit"]
         est_wattage[len(data[item])] += est_total_wattage
         est_missing_wattage[len(data[item])] += power_limit-est_total_wattage
         est_hashrate[len(data[item])] += round(est_total_hashrate)
@@ -206,7 +196,9 @@ def create_boards_pie_chart(data, list_data: list):
         if idx == 3:
             eff_data = [int(efficiency[0].replace(" W/TH", "")), int(efficiency[1].replace(" W/TH", "")), int(efficiency[2].replace(" W/TH", ""))]
             avg_eff = sum(eff_data)/len(eff_data)
-            est_missing_hashrate[idx] = round(est_missing_wattage[idx]/avg_eff)
+            est_missing_hashrate[idx] = 0
+            if not avg_eff == 0:
+                est_missing_hashrate[idx] = round(est_missing_wattage[idx]/avg_eff)
 
         if est_wattage[idx] > 10000:
             est_wattage[idx] = f"{round(est_wattage[idx]/1000, 2)} kW"
@@ -328,22 +320,23 @@ def create_data_table(data):
     table_data = []
     for miner in data:
         miner_bad_boards = 0
-        if miner["Left Chips"] < miner["Nominal"]:
+        if miner["left_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
             miner_bad_boards += 1
             left_bad_boards += 1
-        if miner["Center Chips"] < miner["Nominal"]:
+        if miner["center_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
             miner_bad_boards += 1
             right_bad_boards += 1
-        if miner["Right Chips"] < miner["Nominal"]:
+        if miner["right_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
             miner_bad_boards += 1
             center_bad_boards += 1
         table_data.append(
             [
-                miner["IP"],
-                miner["Total Chips"],
-                miner["Left Chips"],
-                miner["Center Chips"],
-                miner["Right Chips"],
+                miner["ip"],
+                miner["model"],
+                miner["total_chips"],
+                miner["left_chips"],
+                miner["center_chips"],
+                miner["right_chips"],
                 miner_bad_boards,
             ]
         )
@@ -351,17 +344,19 @@ def create_data_table(data):
     table_data.append(
         [
             "Total",
-            sum([miner[1] for miner in table_data]),
+            "-",
             sum([miner[2] for miner in table_data]),
             sum([miner[3] for miner in table_data]),
             sum([miner[4] for miner in table_data]),
             sum([miner[5] for miner in table_data]),
+            sum([miner[6] for miner in table_data]),
         ]
     )
 
     table_data[:0] = (
         [
             "IP",
+            "Model",
             "Total Chips",
             "Left Board Chips",
             "Center Board Chips",
@@ -397,9 +392,9 @@ def create_data_table(data):
         values,
     ) in enumerate(table_data):
         if not row == 0 and not row == (len(table_data) - 1):
-            failed_boards = values[5]
+            failed_boards = values[6]
             if not failed_boards == 0:
-                table_style.add("TEXTCOLOR", (5, row), (5, row), colors.red)
+                table_style.add("TEXTCOLOR", (6, row), (6, row), colors.red)
 
     # set the styles to the table
     t.setStyle(table_style)

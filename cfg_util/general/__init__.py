@@ -9,12 +9,12 @@ from cfg_util.tables import TableManager, DATA_HEADER_MAP
 
 progress_bar_len = 0
 
+DEFAULT_DATA = set()
 headers = []
-for key in TABLE_HEADERS.keys():
-    for item in TABLE_HEADERS[key]:
-        headers.append(item)
-
-DEFAULT_DATA = set(headers)
+for table in TABLE_HEADERS:
+    for header in TABLE_HEADERS[table]:
+        headers.append(headers)
+        DEFAULT_DATA.add(TABLE_HEADERS[table][header])
 
 
 def btn_all(table, selected):
@@ -56,7 +56,7 @@ async def update_miners_data(miners: list):
         _data = {}
         for key in DEFAULT_DATA:
             _data[key] = ""
-        _data["IP"] = str(miner)
+        _data["ip"] = str(miner)
         data.append(_data)
 
     TableManager().update_data(data)
@@ -79,9 +79,4 @@ async def update_miners_data(miners: list):
 
 
 async def _get_data(miner):
-    _data = (await miner.get_data()).asdict()
-    data = {}
-    for item in _data.keys():
-        if item in DATA_HEADER_MAP.keys():
-            data[DATA_HEADER_MAP[item]] = _data[item]
-    return data
+    return (await miner.get_data()).asdict()

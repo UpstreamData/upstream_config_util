@@ -10,26 +10,27 @@ import PySimpleGUI as sg
 import ipaddress
 
 DATA_HEADER_MAP = {
-    "ip": "IP",
-    "model": "Model",
-    "hostname": "Hostname",
-    "hashrate": "Hashrate",
-    "temperature_avg": "Temp",
-    "wattage": "Wattage",
-    "ideal_chips": "Ideal",
-    "left_chips": "Left Board",
-    "center_chips": "Center Board",
-    "right_chips": "Right Board",
-    "total_chips": "Total",
-    "nominal": "Nominal",
-    "pool_split": "Split",
-    "pool_1_url": "Pool 1",
-    "pool_1_user": "Pool 1 User",
-    "pool_2_url": "Pool 2",
-    "pool_2_user": "Pool 2 User",
-    "percent_ideal": "Chip %",
-    "wattage_limit": "Power Limit",
-    "fault_light": "Light"
+    "IP": "ip",
+    "Model": "model",
+    "Hostname": "hostname",
+    "Hashrate": "hashrate",
+    "Temp": "temperature_avg",
+    "Wattage": "wattage",
+    "Ideal": "ideal_chips",
+    "Left Board": "left_chips",
+    "Center Board": "center_chips",
+    "Right Board": "right_chips",
+    "Total": "total_chips",
+    "Nominal": "nominal",
+    "Split": "pool_split",
+    "Pool 1": "pool_1_url",
+    "Pool 1 User": "pool_1_user",
+    "Pool 2": "pool_2_url",
+    "Pool 2 User": "pool_2_user",
+    "Chip %": "percent_ideal",
+    "Power Limit": "wattage_limit",
+    "Light": "fault_light",
+    "Output": "output"
 }
 
 
@@ -89,17 +90,17 @@ class TableManager(metaclass=Singleton):
         self.update_tables()
 
     def update_item(self, data: dict):
-        if not data or data == {} or not data.get("IP"):
+        if not data or data == {} or not data.get("ip"):
             return
 
-        if not data["IP"] in self.data.keys():
-            self.data[data["IP"]] = {}
+        if not data["ip"] in self.data.keys():
+            self.data[data["ip"]] = {}
 
-        if not data.get("Light") and not self.data[data["IP"]].get("Light"):
-            data["Light"] = False
+        if not data.get("fault_light") and not self.data[data["ip"]].get("fault_light"):
+            data["fault_light"] = False
 
         for key in data.keys():
-            self.data[data["IP"]][key] = data[key]
+            self.data[data["ip"]][key] = data[key]
 
         self.update_tables()
 
@@ -129,7 +130,7 @@ class TableManager(metaclass=Singleton):
             "CMD": "cmd_table",
         }
 
-        for table in TABLE_HEADERS.keys():
+        for table in TABLE_HEADERS:
             widget = window[table_names[table]].Widget
             for idx, header in enumerate(TABLE_HEADERS[table]):
                 _header = header
@@ -157,20 +158,20 @@ class TableManager(metaclass=Singleton):
             item = self.data[key]
             keys = item.keys()
 
-            if "Hashrate" in keys:
-                if not isinstance(item["Hashrate"], str):
+            if "hashrate" in keys:
+                if not isinstance(item["hashrate"], str):
                     item[
-                        "Hashrate"
-                    ] = f"{format(float(item['Hashrate']), '.2f').rjust(6, ' ')} TH/s"
+                        "hashrate"
+                    ] = f"{format(float(item['hashrate']), '.2f').rjust(6, ' ')} TH/s"
 
-            if "Chip %" in keys:
-                if not isinstance(item["Chip %"], str):
-                    item["Chip %"] = f"{item['Chip %']}%"
+            if "percent_ideal" in keys:
+                if not isinstance(item["percent_ideal"], str):
+                    item["percent_ideal"] = f"{item['percent_ideal']}%"
 
             for _key in keys:
-                for table in TABLE_HEADERS.keys():
+                for table in TABLE_HEADERS:
                     for idx, header in enumerate(TABLE_HEADERS[table]):
-                        if _key == header:
+                        if _key == TABLE_HEADERS[table][header]:
                             tables[table][data_idx][idx] = item[_key]
 
         window["scan_table"].update(tables["SCAN"])
@@ -184,7 +185,7 @@ class TableManager(metaclass=Singleton):
         for idx, item in enumerate(tables["CMD"]):
             ico = LIGHT
             status = " Off"
-            if self.data[item[0]]["Light"]:
+            if self.data[item[0]]["fault_light"]:
                 ico = FAULT_LIGHT
                 status = " On"
             treedata.insert("", idx, status, item, icon=ico)
@@ -195,35 +196,35 @@ class TableManager(metaclass=Singleton):
         total_hr = 0
         for key in self.data.keys():
             hashrate = 0
-            if not self.data[key]["Hashrate"] == "":
+            if not self.data[key]["hashrate"] == "":
                 hashrate = (
-                    self.data[key]["Hashrate"].replace(" ", "").replace("TH/s", "")
+                    self.data[key]["hashrate"].replace(" ", "").replace("TH/s", "")
                 )
             total_hr += float(hashrate)
         update_total_hr(round(total_hr))
 
     def _get_sort(self, data_key: str):
-        if self.sort_key not in self.data[data_key]:
+        if DATA_HEADER_MAP[self.sort_key] not in self.data[data_key]:
             print(self.data[data_key])
             return ""
 
         if self.sort_key == "IP":
-            return ipaddress.ip_address(self.data[data_key]["IP"])
+            return ipaddress.ip_address(self.data[data_key]["ip"])
 
         if self.sort_key == "Chip %":
-            if self.data[data_key]["Chip %"] == "":
+            if self.data[data_key]["percent_ideal"] == "":
                 return 0
-            if isinstance(self.data[data_key]["Chip %"], int):
-                return self.data[data_key]["Chip %"]
-            return int((self.data[data_key]["Chip %"]).replace("%", ""))
+            if isinstance(self.data[data_key]["percent_ideal"], int):
+                return self.data[data_key]["percent_ideal"]
+            return int((self.data[data_key]["percent_ideal"]).replace("%", ""))
 
         if self.sort_key == "Hashrate":
-            if self.data[data_key]["Hashrate"] == "":
+            if self.data[data_key]["hashrate"] == "":
                 return -1
-            if not isinstance(self.data[data_key]["Hashrate"], str):
-                return self.data[data_key]["Hashrate"]
+            if not isinstance(self.data[data_key]["hashrate"], str):
+                return self.data[data_key]["hashrate"]
             return float(
-                self.data[data_key]["Hashrate"].replace(" ", "").replace("TH/s", "")
+                self.data[data_key]["hashrate"].replace(" ", "").replace("TH/s", "")
             )
 
         if self.sort_key in [
@@ -236,21 +237,21 @@ class TableManager(metaclass=Singleton):
             "Right Board",
             "Power Limit"
         ]:
-            if isinstance(self.data[data_key][self.sort_key], str):
+            if isinstance(self.data[data_key][DATA_HEADER_MAP[self.sort_key]], str):
                 return -300
 
         if self.sort_key == "Split":
-            if self.data[data_key][self.sort_key] == "":
+            if self.data[data_key][DATA_HEADER_MAP[self.sort_key]] == "":
                 return -1
-            if "/" not in self.data[data_key][self.sort_key]:
+            if "/" not in self.data[data_key][DATA_HEADER_MAP[self.sort_key]]:
                 return 0
 
             if not self.sort_reverse:
-                return int(self.data[data_key][self.sort_key].split("/")[0])
+                return int(self.data[data_key][DATA_HEADER_MAP[self.sort_key]].split("/")[0])
             else:
-                return int(self.data[data_key][self.sort_key].split("/")[1])
+                return int(self.data[data_key][DATA_HEADER_MAP[self.sort_key]].split("/")[1])
 
-        return self.data[data_key][self.sort_key]
+        return self.data[data_key][DATA_HEADER_MAP[self.sort_key]]
 
     def clear_tables(self):
         self.data = {}

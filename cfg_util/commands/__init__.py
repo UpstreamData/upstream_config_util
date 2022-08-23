@@ -21,17 +21,17 @@ async def btn_light(ip_idxs: list):
     for idx in ip_idxs:
         item = _table.item(iids[idx])
         ip = item["values"][0]
-        new_light_val = not table_manager.data[ip]["Light"]
+        new_light_val = not table_manager.data[ip]["fault_light"]
         tasks.append(_fault_light(ip, new_light_val))
         vals[ip] = new_light_val
 
     for task in asyncio.as_completed(tasks):
         ip, success = await task
         if success:
-            table_manager.data[ip]["Light"] = vals[ip]
-            table_manager.data[ip]["Output"] = "Fault Light command succeeded."
+            table_manager.data[ip]["fault_light"] = vals[ip]
+            table_manager.data[ip]["output"] = "Fault Light command succeeded."
         else:
-            table_manager.data[ip]["Output"] = "Fault Light command failed."
+            table_manager.data[ip]["output"] = "Fault Light command failed."
         table_manager.update_tables()
 
 
@@ -65,9 +65,9 @@ async def btn_reboot(ip_idxs: list):
         async for done in sent:
             success = done["Status"]
             if success:
-                table_manager.data[ip]["Output"] = "Reboot command succeeded."
+                table_manager.data[ip]["output"] = "Reboot command succeeded."
             else:
-                table_manager.data[ip]["Output"] = "Reboot command failed."
+                table_manager.data[ip]["output"] = "Reboot command failed."
             table_manager.update_tables()
 
 
@@ -102,9 +102,9 @@ async def btn_backend(ip_idxs: list):
         miner = await MinerFactory().get_miner(ip)
         success = await miner.restart_backend()
         if success:
-            table_manager.data[ip]["Output"] = "Restart Backend command succeeded."
+            table_manager.data[ip]["output"] = "Restart Backend command succeeded."
         else:
-            table_manager.data[ip]["Output"] = "Restart Backend command failed."
+            table_manager.data[ip]["output"] = "Restart Backend command failed."
     table_manager.update_tables()
 
 
@@ -127,7 +127,7 @@ async def btn_command(ip_idxs: list, command: str):
         success = done["Status"]
         if not isinstance(done["Status"], str):
             success = f"Command {command} failed."
-        table_manager.data[done["IP"]]["Output"] = success
+        table_manager.data[done["IP"]]["output"] = success
         prog_bar_len += 1
         table_manager.update_tables()
         await update_prog_bar(prog_bar_len, len(ip_idxs))

@@ -83,45 +83,50 @@ sg.LOOK_AND_FEEL_TABLE["cfg_util_theme"] = {
 sg.theme("cfg_util_theme")
 
 TABLE_HEADERS = {
-    "SCAN": [
-        "IP",
-        "Model",
-        "Hostname",
-        "Hashrate",
-        "Temp",
-        "Pool 1 User",
-        "Wattage",
-    ],
-    "BOARDS": [
-        "IP",
-        "Model",
-        "Ideal",
-        "Total",
-        "Chip %",
-        "Left Board",
-        "Center Board",
-        "Right Board",
-    ],
-    "CMD": ["IP", "Model", "Output"],
-    "POOLS_ALL": [
-        "IP",
-        "Split",
-        "Pool 1 User",
-        "Pool 2 User",
-    ],
-    "POOLS_1": [
-        "IP",
-        "Split",
-        "Pool 1",
-        "Pool 1 User",
-    ],
-    "POOLS_2": [
-        "IP",
-        "Split",
-        "Pool 2",
-        "Pool 2 User",
-    ],
-    "CONFIG": ["IP", "Model", "Pool 1 User", "Power Limit"],
+    "SCAN": {
+        "IP": "ip",
+        "Model": "model",
+        "Hostname": "hostname",
+        "Hashrate": "hashrate",
+        "Temp": "temperature_avg",
+        "Pool 1 User": "pool_1_user",
+        "Wattage": "wattage",
+    },
+    "BOARDS": {
+        "IP": "ip",
+        "Model": "model",
+        "Ideal": "ideal_chips",
+        "Total": "total_chips",
+        "Chip %": "percent_ideal",
+        "Left Board": "left_chips",
+        "Center Board": "center_chips",
+        "Right Board": "right_chips",
+    },
+    "CMD": {"IP": "ip", "Model": "model", "Output": "output"},
+    "POOLS_ALL": {
+        "IP": "ip",
+        "Split": "pool_split",
+        "Pool 1 User": "pool_1_user",
+        "Pool 2 User": "pool_2_user",
+    },
+    "POOLS_1": {
+        "IP": "ip",
+        "Split": "pool_split",
+        "Pool 1": "pool_1_url",
+        "Pool 1 User": "pool_1_user",
+    },
+    "POOLS_2": {
+        "IP": "ip",
+        "Split": "pool_split",
+        "Pool 2": "pool_2_url",
+        "Pool 2 User": "pool_2_user",
+    },
+    "CONFIG": {
+        "IP": "ip",
+        "Model": "model",
+        "Pool 1 User": "pool_1_user",
+        "Power Limit": "wattage_limit",
+    },
 }
 
 TABLE_KEYS = {
