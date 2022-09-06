@@ -9,9 +9,8 @@
 
 # CFG-Util
 [Click here to get a windows build.](https://drive.google.com/drive/folders/1DjR8UOS_g0ehfiJcgmrV0FFoqFvE9akW?usp=sharing)
-All builds starting with v1.1.0 are signed and should match this PGP fingerprint -
 
-`BC8F F269 6555 1D18 0D77  3427 B11E 718B F4B7 47F9`
+All builds starting with v1.1.0 are signed and should match this PGP fingerprint - `BC8F F269 6555 1D18 0D77  3427 B11E 718B F4B7 47F9`
 
 
 ## Interact with bitcoin mining ASICs using a simple GUI.
