@@ -18,8 +18,7 @@ async def btn_import(table, selected):
         return
     ip = [window[table].Values[row][0] for row in selected][0]
     miner = await MinerFactory().get_miner(ip)
-    await miner.get_config()
-    config = miner.config
+    config = await miner.get_config()
     if config:
         window["cfg_config_txt"].update(config.as_yaml())
 
