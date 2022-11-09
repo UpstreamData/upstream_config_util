@@ -30,7 +30,7 @@ DATA_HEADER_MAP = {
     "Chip %": "percent_ideal",
     "Power Limit": "wattage_limit",
     "Light": "fault_light",
-    "Output": "output"
+    "Output": "output",
 }
 
 
@@ -235,7 +235,7 @@ class TableManager(metaclass=Singleton):
             "Left Board",
             "Center Board",
             "Right Board",
-            "Power Limit"
+            "Power Limit",
         ]:
             if isinstance(self.data[data_key][DATA_HEADER_MAP[self.sort_key]], str):
                 return -300
@@ -247,9 +247,13 @@ class TableManager(metaclass=Singleton):
                 return 0
 
             if not self.sort_reverse:
-                return int(self.data[data_key][DATA_HEADER_MAP[self.sort_key]].split("/")[0])
+                return int(
+                    self.data[data_key][DATA_HEADER_MAP[self.sort_key]].split("/")[0]
+                )
             else:
-                return int(self.data[data_key][DATA_HEADER_MAP[self.sort_key]].split("/")[1])
+                return int(
+                    self.data[data_key][DATA_HEADER_MAP[self.sort_key]].split("/")[1]
+                )
 
         return self.data[data_key][DATA_HEADER_MAP[self.sort_key]]
 

@@ -86,8 +86,6 @@ async def boards_report(file_location):
     for ip in data:
         data[ip]["hashrate"] = float(data[ip]["hashrate"].replace("TH/s", "").strip())
 
-
-
     list_data = []
     for ip in data.keys():
         new_data = data[ip]
@@ -100,11 +98,11 @@ async def boards_report(file_location):
     image_selection_data = {}
     for miner in list_data:
         miner_bad_boards = ""
-        if miner["left_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
+        if miner["left_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
             miner_bad_boards += "l"
-        if miner["center_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
+        if miner["center_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
             miner_bad_boards += "c"
-        if miner["right_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
+        if miner["right_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
             miner_bad_boards += "r"
         image_selection_data[miner["ip"]] = miner_bad_boards
 
@@ -187,18 +185,25 @@ def create_boards_pie_chart(data, list_data: list):
                 est_total_hashrate = list_data_item["hashrate"]
                 power_limit = list_data_item["wattage_limit"]
         est_wattage[len(data[item])] += est_total_wattage
-        est_missing_wattage[len(data[item])] += power_limit-est_total_wattage
+        est_missing_wattage[len(data[item])] += power_limit - est_total_wattage
         est_hashrate[len(data[item])] += round(est_total_hashrate)
     for idx in range(4):
         efficiency[idx] = f"{round(est_wattage[idx]/(est_hashrate[idx]+1))} W/TH"
         if not idx == 0 and not idx == 3:
-            est_missing_hashrate[idx] = round(est_missing_wattage[idx]/((round(est_wattage[idx] / (est_hashrate[idx] + 1)+1))))
+            est_missing_hashrate[idx] = round(
+                est_missing_wattage[idx]
+                / ((round(est_wattage[idx] / (est_hashrate[idx] + 1) + 1)))
+            )
         if idx == 3:
-            eff_data = [int(efficiency[0].replace(" W/TH", "")), int(efficiency[1].replace(" W/TH", "")), int(efficiency[2].replace(" W/TH", ""))]
-            avg_eff = sum(eff_data)/len(eff_data)
+            eff_data = [
+                int(efficiency[0].replace(" W/TH", "")),
+                int(efficiency[1].replace(" W/TH", "")),
+                int(efficiency[2].replace(" W/TH", "")),
+            ]
+            avg_eff = sum(eff_data) / len(eff_data)
             est_missing_hashrate[idx] = 0
             if not avg_eff == 0:
-                est_missing_hashrate[idx] = round(est_missing_wattage[idx]/avg_eff)
+                est_missing_hashrate[idx] = round(est_missing_wattage[idx] / avg_eff)
 
         if est_wattage[idx] > 10000:
             est_wattage[idx] = f"{round(est_wattage[idx]/1000, 2)} kW"
@@ -250,7 +255,7 @@ def create_boards_pie_chart(data, list_data: list):
         ["Est. Missing Watts", *est_missing_wattage],
         ["Est. Hashrate", *est_hashrate],
         ["Est. Missing Hashrate", *est_missing_hashrate],
-        ["Efficiency", *efficiency]
+        ["Efficiency", *efficiency],
     ]
 
     t = Table(table_data)
@@ -320,13 +325,13 @@ def create_data_table(data):
     table_data = []
     for miner in data:
         miner_bad_boards = 0
-        if miner["left_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
+        if miner["left_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
             miner_bad_boards += 1
             left_bad_boards += 1
-        if miner["center_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
+        if miner["center_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
             miner_bad_boards += 1
             right_bad_boards += 1
-        if miner["right_chips"] < (miner["ideal_chips"]/3)*CHIP_PCT_IDEAL:
+        if miner["right_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
             miner_bad_boards += 1
             center_bad_boards += 1
         table_data.append(
@@ -446,6 +451,7 @@ def get_table_data(data):
     if not table_row == []:
         table_elems.append(table_row)
     return table_elems
+
 
 def create_recommendations_page(data: list):
     return None

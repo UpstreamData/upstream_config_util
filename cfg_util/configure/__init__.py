@@ -66,9 +66,7 @@ async def send_config_generator(miners: list, config, last_octet_ip_user: bool):
                 loop.create_task(miner.send_config(config, user_suffix=suffix))
             )
         else:
-            config_tasks.append(
-                loop.create_task(miner.send_config(config))
-            )
+            config_tasks.append(loop.create_task(miner.send_config(config)))
     configured = asyncio.as_completed(config_tasks)
     for sent_config in configured:
         yield await sent_config

@@ -68,9 +68,7 @@ async def update_miners_data(miners: list):
     async for miner in MinerFactory().get_miner_generator(miners):
         _miners.append(miner)
 
-    data_generator = asyncio.as_completed(
-        [_get_data(miner) for miner in _miners]
-    )
+    data_generator = asyncio.as_completed([_get_data(miner) for miner in _miners])
     for all_data in data_generator:
         data = await all_data
         TableManager().update_item(data)
