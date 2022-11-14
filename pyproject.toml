@@ -4,7 +4,6 @@ version = "1.1.1"
 description = ""
 authors = ["UpstreamData <brett@upstreamdata.ca>"]
 readme = "README.md"
-packages = [{include = "upstream_config_util"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -12,7 +11,7 @@ PySimpleGUI = "^4.60.4"
 matplotlib = "^3.6.2"
 reportlab = "^3.6.12"
 svglib = "^1.4.1"
-pyasic = "^0.20.1"
+pyasic = "^0.21"
 pyperclip = "^1.8.2"
 
 [tool.poetry.group.dev]
