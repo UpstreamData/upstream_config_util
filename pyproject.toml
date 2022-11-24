@@ -11,7 +11,7 @@ PySimpleGUI = "^4.60.4"
 matplotlib = "^3.6.2"
 reportlab = "^3.6.12"
 svglib = "^1.4.1"
-pyasic = "^0.21"
+pyasic = "^0.21.17"
 pyperclip = "^1.8.2"
 
 [tool.poetry.group.dev]
