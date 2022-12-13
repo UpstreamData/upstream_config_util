@@ -31,6 +31,7 @@ DATA_HEADER_MAP = {
     "Power Limit": "wattage_limit",
     "Light": "fault_light",
     "Output": "output",
+    "Version": "fw_ver"
 }
 
 

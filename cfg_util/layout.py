@@ -102,7 +102,7 @@ TABLE_HEADERS = {
         "Center Board": "center_chips",
         "Right Board": "right_chips",
     },
-    "CMD": {"IP": "ip", "Model": "model", "Output": "output"},
+    "CMD": {"IP": "ip", "Model": "model", "Version": "fw_ver", "Output": "output"},
     "POOLS_ALL": {
         "IP": "ip",
         "Split": "pool_split",
@@ -380,7 +380,8 @@ def get_command_layout():
     col_widths = [
         IP_COL_WIDTH,
         MODEL_COL_WIDTH,
-        TABLE_TOTAL_WIDTH - (IP_COL_WIDTH + MODEL_COL_WIDTH + IMAGE_COL_WIDTH + 4),
+        MODEL_COL_WIDTH,
+        TABLE_TOTAL_WIDTH - (IP_COL_WIDTH + MODEL_COL_WIDTH + MODEL_COL_WIDTH + IMAGE_COL_WIDTH + 4),
     ]
 
     command_layout = [
