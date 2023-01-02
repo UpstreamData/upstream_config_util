@@ -1,5 +1,6 @@
 import asyncio
 import sys
+import logging
 
 from .ui import ui
 
@@ -12,12 +13,22 @@ if (
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 
+def handle_exception(loop, context):
+    # context["message"] will always be there; but context["exception"] may not
+    msg = context.get("exception", context["message"])
+    logging.error(f"Caught exception: {msg}")
+
+
 def main():
     from logger import init_logger
 
     init_logger()
 
-    asyncio.run(ui())
+    loop = asyncio.get_event_loop()
+
+    loop.set_exception_handler(handle_exception)
+
+    loop.run_until_complete(ui())
 
 
 if __name__ == "__main__":
