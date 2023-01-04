@@ -1,6 +1,7 @@
 import asyncio
 import sys
 import logging
+import PySimpleGUI as sg
 
 from .ui import ui
 
@@ -17,6 +18,7 @@ def handle_exception(loop, context):
     # context["message"] will always be there; but context["exception"] may not
     msg = context.get("exception", context["message"])
     logging.error(f"Caught exception: {msg}")
+    sg.popup_error_with_traceback("An error occurred.  Please give the maintainer this information.", msg)
 
 
 def main():
