@@ -32,7 +32,7 @@ def main():
 
     loop = asyncio.get_event_loop()
 
-    loop.set_exception_handler(handle_exception)
+    # loop.set_exception_handler(handle_exception)
 
     loop.run_until_complete(ui())
 

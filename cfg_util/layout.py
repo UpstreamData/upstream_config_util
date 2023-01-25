@@ -172,6 +172,7 @@ BUTTON_KEYS = [
     "cfg_all",
     "cfg_web",
     "cmd_listen",
+    "cmd_wm_unlock",
     "record",
 ]
 
@@ -418,6 +419,11 @@ def get_command_layout():
             sg.Button(
                 "RESTART BACKEND",
                 key="cmd_backend",
+                border_width=BTN_BORDER,
+            ),
+            sg.Button(
+                "WM UNLOCK",
+                key="cmd_wm_unlock",
                 border_width=BTN_BORDER,
             ),
             sg.Button(

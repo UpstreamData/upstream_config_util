@@ -11,6 +11,7 @@ from cfg_util.commands import (
     btn_command,
     btn_cancel_listen,
     btn_listen,
+    btn_wm_unlock
 )
 from cfg_util.configure import (
     generate_config_ui,
@@ -196,6 +197,10 @@ async def ui():
             _table = "cmd_table"
             _ips = value[_table]
             asyncio.create_task(btn_light(_ips))
+        if event == "cmd_wm_unlock":
+            _table = "cmd_table"
+            _ips = value[_table]
+            asyncio.create_task(btn_wm_unlock(_ips))
         if event == "cmd_reboot":
             _table = "cmd_table"
             _ips = value[_table]
