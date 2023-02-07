@@ -126,4 +126,19 @@ async def _get_miner_data(miner):
 
 
 async def _get_data(miner):
-    return (await miner.get_data()).asdict()
+    return (
+        await miner.get_data(
+            data_to_get=[
+                "model",
+                "fw_ver",
+                "hostname",
+                "hashrate",
+                "nominal_hashrate",
+                "hashboards",
+                "wattage",
+                "wattage_limit",
+                "fault_light",
+                "pools",
+            ]
+        )
+    ).asdict()

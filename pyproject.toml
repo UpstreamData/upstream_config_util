@@ -6,12 +6,12 @@ authors = ["UpstreamData <brett@upstreamdata.ca>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.7"
 PySimpleGUI = "^4.60.4"
 matplotlib = "^3.6.2"
 reportlab = "^3.6.12"
 svglib = "^1.4.1"
-pyasic = "^0.24"
+pyasic = "*"
 pyperclip = "^1.8.2"
 
 [tool.poetry.group.dev]
