@@ -1,8 +1,8 @@
 import asyncio
 
 import PySimpleGUI as sg
-from cfg_util.record.layout import get_record_window
-from cfg_util.record.func import (
+from upstream_config_util.record.layout import get_record_window
+from upstream_config_util.record.func import (
     start_recording,
     stop_recording,
     pause_recording,

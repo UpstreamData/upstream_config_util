@@ -1,5 +1,5 @@
 from typing import List
-from cfg_util.record.manager import RecordingManager
+from upstream_config_util.record.manager import RecordingManager
 import PySimpleGUI as sg
 
 

@@ -27,9 +27,9 @@ from reportlab.platypus import (
 from svglib.svglib import svg2rlg
 
 from pyasic.miners.miner_factory import MinerFactory
-from cfg_util.decorators import disable_buttons
-from cfg_util.imgs import IMAGE_SELECTION_MATRIX, LOGO
-from cfg_util.tables import TableManager
+from upstream_config_util.decorators import disable_buttons
+from upstream_config_util.imgs import IMAGE_SELECTION_MATRIX, LOGO
+from upstream_config_util.tables import TableManager
 
 CHIP_PCT_IDEAL = 0.9
 

@@ -1,11 +1,11 @@
-from cfg_util.layout import (
+from upstream_config_util.layout import (
     MINER_COUNT_BUTTONS,
     HASHRATE_TOTAL_BUTTONS,
     TABLE_KEYS,
     TABLE_HEADERS,
     window,
 )
-from cfg_util.imgs import TkImages, LIGHT, FAULT_LIGHT
+from upstream_config_util.imgs import TkImages, LIGHT, FAULT_LIGHT
 import PySimpleGUI as sg
 import ipaddress
 

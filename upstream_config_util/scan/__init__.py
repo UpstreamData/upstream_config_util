@@ -3,9 +3,9 @@ import logging
 
 from pyasic.miners.miner_factory import MinerFactory
 from pyasic.network import MinerNetwork
-from cfg_util.decorators import disable_buttons
-from cfg_util.layout import window, update_prog_bar, TABLE_HEADERS
-from cfg_util.tables import clear_tables, TableManager, DATA_HEADER_MAP
+from upstream_config_util.decorators import disable_buttons
+from upstream_config_util.layout import window, update_prog_bar, TABLE_HEADERS
+from upstream_config_util.tables import clear_tables, TableManager, DATA_HEADER_MAP
 
 
 class Singleton(type):

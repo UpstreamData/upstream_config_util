@@ -1,6 +1,6 @@
 import asyncio
 
-from cfg_util.record.pdf import generate_pdf
+from upstream_config_util.record.pdf import generate_pdf
 
 from pyasic.miners.miner_factory import MinerFactory
 

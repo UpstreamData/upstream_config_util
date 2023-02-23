@@ -1,10 +1,10 @@
 import PySimpleGUI as sg
 import asyncio
 import sys
-from cfg_util.boards import boards_report
-from cfg_util.imgs import TkImages
-from cfg_util.scan import btn_scan, scan_cancel
-from cfg_util.commands import (
+from upstream_config_util.boards import boards_report
+from upstream_config_util.imgs import TkImages
+from upstream_config_util.scan import btn_scan, scan_cancel
+from upstream_config_util.commands import (
     btn_light,
     btn_reboot,
     btn_backend,
@@ -13,15 +13,15 @@ from cfg_util.commands import (
     btn_listen,
     btn_wm_unlock
 )
-from cfg_util.configure import (
+from upstream_config_util.configure import (
     generate_config_ui,
     btn_import,
     btn_config,
 )
-from cfg_util.record import record_ui
-from cfg_util.layout import window, TABLE_KEYS
-from cfg_util.general import btn_all, btn_web, btn_refresh
-from cfg_util.tables import TableManager
+from upstream_config_util.record import record_ui
+from upstream_config_util.layout import window, TABLE_KEYS
+from upstream_config_util.general import btn_all, btn_web, btn_refresh
+from upstream_config_util.tables import TableManager
 import tkinter as tk
 import pyperclip
 

@@ -1,5 +1,5 @@
-from cfg_util.layout import window
-from cfg_util.layout import BUTTON_KEYS
+from upstream_config_util.layout import window
+from upstream_config_util.layout import BUTTON_KEYS
 
 
 def disable_buttons(status: str = ""):

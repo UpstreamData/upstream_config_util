@@ -2,10 +2,10 @@ import asyncio
 import webbrowser
 
 from pyasic.miners.miner_factory import MinerFactory
-from cfg_util.decorators import disable_buttons
-from cfg_util.layout import TABLE_KEYS
-from cfg_util.layout import window, update_prog_bar, TABLE_HEADERS
-from cfg_util.tables import TableManager, DATA_HEADER_MAP
+from upstream_config_util.decorators import disable_buttons
+from upstream_config_util.layout import TABLE_KEYS
+from upstream_config_util.layout import window, update_prog_bar, TABLE_HEADERS
+from upstream_config_util.tables import TableManager, DATA_HEADER_MAP
 
 progress_bar_len = 0
 

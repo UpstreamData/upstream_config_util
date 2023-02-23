@@ -1,9 +1,9 @@
 from pyasic.miners.miner_factory import MinerFactory
 from pyasic.miners.miner_listener import MinerListener
 from pyasic.miners._types.makes import WhatsMiner
-from cfg_util.layout import window, update_prog_bar, WINDOW_ICON
-from cfg_util.tables import TableManager
-from cfg_util.decorators import disable_buttons
+from upstream_config_util.layout import window, update_prog_bar, WINDOW_ICON
+from upstream_config_util.tables import TableManager
+from upstream_config_util.decorators import disable_buttons
 from settings import CFG_UTIL_CONFIG_THREADS as COMMAND_THREADS, REBOOT_THREADS
 from typing import Tuple
 

@@ -5,9 +5,9 @@ import PySimpleGUI as sg
 from pyasic.config import MinerConfig
 from pyasic.miners.miner_factory import MinerFactory
 from settings import CFG_UTIL_CONFIG_THREADS as CONFIG_THREADS
-from cfg_util.decorators import disable_buttons
-from cfg_util.general import update_miners_data
-from cfg_util.layout import window, update_prog_bar
+from upstream_config_util.decorators import disable_buttons
+from upstream_config_util.general import update_miners_data
+from upstream_config_util.layout import window, update_prog_bar
 
 progress_bar_len = 0
 
