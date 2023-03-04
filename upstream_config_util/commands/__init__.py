@@ -1,6 +1,6 @@
 from pyasic.miners.miner_factory import MinerFactory
 from pyasic.miners.miner_listener import MinerListener
-from pyasic.miners._types.makes import WhatsMiner
+from pyasic.miners.makes import WhatsMiner
 from upstream_config_util.layout import window, update_prog_bar, WINDOW_ICON
 from upstream_config_util.tables import TableManager
 from upstream_config_util.decorators import disable_buttons
