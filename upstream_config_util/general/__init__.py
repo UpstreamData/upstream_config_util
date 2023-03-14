@@ -78,19 +78,5 @@ async def update_miners_data(miners: list):
 
 async def _get_data(miner):
     return (
-        await miner.get_data(
-            data_to_get=[
-                "model",
-                "api_ver",
-                "fw_ver",
-                "hostname",
-                "hashrate",
-                "nominal_hashrate",
-                "hashboards",
-                "wattage",
-                "wattage_limit",
-                "fault_light",
-                "pools",
-            ]
-        )
+        await miner.get_data()
     ).asdict()
