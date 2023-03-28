@@ -8,6 +8,8 @@ reboot_threads = 300
 
 logfile = false
 
+speed_optimizations = true
+
 ### DEBUG MODE ###
 # change this to debug = true
 # to enable debug mode.

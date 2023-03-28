@@ -44,3 +44,19 @@ if "debug" in settings_keys:
 if "logfile" in settings_keys:
     PyasicSettings().logfile = settings["logfile"]
     LOGFILE = settings["logfile"]
+
+if "speed_optimizations" in settings_keys:
+    if settings["speed_optimizations"]:
+        DATA_TO_GET = [
+            "model",
+            "hashrate",
+            "hashboards",
+            "pools",
+            "wattage",
+            "wattage_limit",
+            "fault_light",
+        ]
+    else:
+        DATA_TO_GET = None
+else:
+    DATA_TO_GET = None
