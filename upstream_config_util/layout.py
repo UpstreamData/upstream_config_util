@@ -97,7 +97,7 @@ TABLE_HEADERS = {
         "Model": "model",
         "Ideal": "ideal_chips",
         "Total": "total_chips",
-        "Chip %": "percent_ideal",
+        "Chip %": "percent_ideal_chips",
         "Left Board": "left_chips",
         "Center Board": "center_chips",
         "Right Board": "right_chips",
