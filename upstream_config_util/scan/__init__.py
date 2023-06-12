@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from pyasic.miners.miner_factory import MinerFactory
+from pyasic.miners.miner_factory import miner_factory
 from pyasic.network import MinerNetwork
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.layout import window, update_prog_bar, TABLE_HEADERS
@@ -70,7 +70,7 @@ async def _scan_miners(network: MinerNetwork):
     clear_tables()
 
     # clear miner factory cache to make sure we are getting correct miners
-    MinerFactory().clear_cached_miners()
+    miner_factory.clear_cached_miners()
 
     # create async generator to scan network for miners
     scan_generator = network.scan_network_generator()
@@ -87,7 +87,7 @@ async def _scan_miners(network: MinerNetwork):
     try:
         async for miner in scan_generator:
             # if the generator yields a miner, add it to our list
-            if miner:
+            if miner is not None:
                 miners.append(miner)
 
                 # sort the list of miners by IP
@@ -102,6 +102,8 @@ async def _scan_miners(network: MinerNetwork):
 
                 # create a task to get data, and save it to ensure it finishes
                 data_tasks.append(asyncio.create_task(_get_miner_data(miner)))
+            else:
+                progress_bar_len += 1
 
             # update progress bar to indicate scanned miners
             progress_bar_len += 1
