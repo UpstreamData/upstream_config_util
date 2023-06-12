@@ -2,7 +2,7 @@ import asyncio
 
 from upstream_config_util.record.pdf import generate_pdf
 
-from pyasic.miners.miner_factory import MinerFactory
+from pyasic.miners.miner_factory import MinerFactory, miner_factory
 
 from typing import List, Dict
 from settings import DATA_TO_GET
@@ -80,7 +80,7 @@ class RecordingManager(metaclass=Singleton):
         self.interval = interval
         self.state = RECORDING
         self.record_window["record_status"].update("Recording...")
-        async for miner in MinerFactory().get_miner_generator(ips):
+        async for miner in miner_factory.get_miner_generator(ips):
             self.miners.append(miner)
 
         asyncio.create_task(self._record_loop())

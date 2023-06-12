@@ -1,4 +1,4 @@
-from pyasic.miners.miner_factory import MinerFactory
+from pyasic.miners.miner_factory import miner_factory
 from pyasic.miners.miner_listener import MinerListener
 from pyasic.miners.makes import WhatsMiner
 from upstream_config_util.layout import window, update_prog_bar, WINDOW_ICON
@@ -48,7 +48,7 @@ async def btn_wm_unlock(ip_idxs: list):
     for idx in ip_idxs:
         item = _table.item(iids[idx])
         ip = item["values"][0]
-        miner = await MinerFactory().get_miner(ip)
+        miner = await miner_factory.get_miner(ip)
         if isinstance(miner, WhatsMiner):
             miners.append(miner)
 
@@ -93,7 +93,7 @@ async def _wm_unlock(miner):
 
 
 async def _fault_light(ip: str, on: bool) -> Tuple[str, bool]:
-    miner = await MinerFactory().get_miner(ip)
+    miner = await miner_factory.get_miner(ip)
     if on:
         success = await miner.fault_light_on()
     else:
@@ -110,12 +110,12 @@ async def btn_reboot(ip_idxs: list):
     for idx in ip_idxs:
         item = _table.item(iids[idx])
         ip = item["values"][0]
-        miner = await MinerFactory().get_miner(ip)
+        miner = await miner_factory.get_miner(ip)
         miners.append(miner)
         for idx in ip_idxs:
             item = _table.item(iids[idx])
             ip = item["values"][0]
-            miner = await MinerFactory().get_miner(ip)
+            miner = await miner_factory.get_miner(ip)
             miners.append(miner)
 
         sent = reboot_generator(miners)
@@ -156,7 +156,7 @@ async def btn_backend(ip_idxs: list):
     for idx in ip_idxs:
         item = _table.item(iids[idx])
         ip = item["values"][0]
-        miner = await MinerFactory().get_miner(ip)
+        miner = await miner_factory.get_miner(ip)
         success = await miner.restart_backend()
         if success:
             table_manager.data[ip]["output"] = "Restart Backend command succeeded."
@@ -176,7 +176,7 @@ async def btn_command(ip_idxs: list, command: str):
     for idx in ip_idxs:
         item = _table.item(iids[idx])
         ip = item["values"][0]
-        miner = await MinerFactory().get_miner(ip)
+        miner = await miner_factory.get_miner(ip)
         miners.append(miner)
 
     sent = send_command_generator(miners, command)

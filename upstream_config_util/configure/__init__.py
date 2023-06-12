@@ -3,7 +3,7 @@ import asyncio
 import PySimpleGUI as sg
 
 from pyasic.config import MinerConfig
-from pyasic.miners.miner_factory import MinerFactory
+from pyasic.miners.miner_factory import miner_factory
 from settings import CFG_UTIL_CONFIG_THREADS as CONFIG_THREADS
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.general import update_miners_data
@@ -17,7 +17,7 @@ async def btn_import(table, selected):
     if not len(selected) > 0:
         return
     ip = [window[table].Values[row][0] for row in selected][0]
-    miner = await MinerFactory().get_miner(ip)
+    miner = await miner_factory.get_miner(ip)
     config = await miner.get_config()
     if config:
         window["cfg_config_txt"].update(config.as_yaml())
@@ -33,7 +33,7 @@ async def send_config(ips: list, config: str, last_octet_ip: bool):
     global progress_bar_len
     progress_bar_len = 0
     await update_prog_bar(progress_bar_len, _max=(2 * len(ips)))
-    get_miner_genenerator = MinerFactory().get_miner_generator(ips)
+    get_miner_genenerator = miner_factory.get_miner_generator(ips)
     all_miners = []
     async for miner in get_miner_genenerator:
         all_miners.append(miner)
