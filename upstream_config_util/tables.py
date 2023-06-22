@@ -17,9 +17,10 @@ DATA_HEADER_MAP = {
     "Temp": "temperature_avg",
     "Wattage": "wattage",
     "Ideal": "ideal_chips",
-    "Left Board": "left_chips",
-    "Center Board": "center_chips",
-    "Right Board": "right_chips",
+    "Board 1": "board_1_chips",
+    "Board 2": "board_2_chips",
+    "Board 3": "board_3_chips",
+    "Board 4": "board_4_chips",
     "Total": "total_chips",
     "Nominal": "nominal",
     "Split": "pool_split",
@@ -102,6 +103,9 @@ class TableManager(metaclass=Singleton):
 
         for key in data.keys():
             self.data[data["ip"]][key] = data[key]
+
+        for board in data.get("hashboards", {}):
+            self.data[data["ip"]][f"board_{board['slot'] + 1}_chips"] = board["chips"]
 
         self.update_tables()
 

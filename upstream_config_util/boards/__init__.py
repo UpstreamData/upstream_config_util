@@ -4,9 +4,11 @@ from base64 import b64decode
 from io import BytesIO
 from copy import copy
 
+import cairosvg
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 import numpy as np
+from reportlab.graphics import renderPDF
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, inch
 from reportlab.lib.styles import (
@@ -30,6 +32,9 @@ from pyasic.miners.miner_factory import MinerFactory
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.imgs import IMAGE_SELECTION_MATRIX, LOGO
 from upstream_config_util.tables import TableManager
+from xml.etree import ElementTree
+from typing import List
+
 
 CHIP_PCT_IDEAL = 0.9
 
@@ -46,6 +51,46 @@ TITLE_STYLE = ParagraphStyle(
     spaceAfter=40,
     fontName="Helvetica-Bold",
 )
+BOARD_WIDTH = 10
+SVG_WIDTH = 100
+SVG_HEIGHT = 100
+BOARD_GOOD_COLOR = "#008000"
+BOARD_BAD_COLOR = "#C00000"
+OUTER_SPACING = 20
+SVG = """
+<svg id="miner_base" width="250" height="250" version="1.1" viewBox="0 0 100 100">
+    <defs>
+        <linearGradient id="background_gradient" x1="100" x2="47.686" y1="100" y2="46.963" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#000080" offset="0"/>
+            <stop stop-color="#008080" offset="1"/>
+        </linearGradient>
+        <filter id="blur_filter" x="-.075" y="-.075" width="1.15" height="1.15" color-interpolation-filters="sRGB">
+            <feGaussianBlur stdDeviation="3.125"/>
+        </filter>
+    </defs>
+    <g id="background">
+        <rect id="Gradient" x="9.5911e-8" width="100" height="100" fill="url(#background_gradient)" filter="url(#blur_filter)" stroke-width=".18428" style="mix-blend-mode:normal"/>
+    </g>
+    <g id="fan" fill="none" stroke="#000">
+        <g id="Fan" stroke-width="5">
+            <g id="Outer">
+                <path id="Outer_Lines" d="m2.6291 97.371 23.282-23.282m48.193-48.193 23.267-23.267m-94.742-4e-7 23.282 23.282m48.178 48.178 23.282 23.282"/>
+                <path id="Outer_Circle" d="m85 50a35 35 0 0 1-35 35 35 35 0 0 1-35-35 35 35 0 0 1 35-35 35 35 0 0 1 35 35z" stroke-linecap="round" stroke-linejoin="round" style="paint-order:markers stroke fill"/>
+            </g>
+            <g id="Inner" transform="matrix(.33644 0 0 .33644 33.183 33.173)">
+                <path id="Inner_Lines" d="m2.6291 97.371 23.282-23.282m48.193-48.193 23.267-23.267m-94.742-4e-7 23.282 23.282m48.178 48.178 23.282 23.282"/>
+                <path id="Inner_Circle" d="m85 50a35 35 0 0 1-35 35 35 35 0 0 1-35-35 35 35 0 0 1 35-35 35 35 0 0 1 35 35z" stroke-linecap="round" stroke-linejoin="round" style="paint-order:markers stroke fill"/>
+            </g>
+            <g id="Mid" transform="matrix(.66139 0 0 .66139 16.93 16.93)">
+                <path id="Mid_Lines" d="m2.6291 97.371 23.282-23.282m48.193-48.193 23.267-23.267m-94.742-4e-7 23.282 23.282m48.178 48.178 23.282 23.282"/>
+                <path id="Mid_Circle" d="m85 50a35 35 0 0 1-35 35 35 35 0 0 1-35-35 35 35 0 0 1 35-35 35 35 0 0 1 35 35z" stroke-linecap="round" stroke-linejoin="round" style="paint-order:markers stroke fill"/>
+            </g>
+        </g>
+        <path id="Outline" d="m2.6291 2.6291h94.742v94.742h-94.742zm13.847 7.6e-6h67.048c7.6712 0 13.847 6.1757 13.847 13.847v67.048c0 7.6712-6.1757 13.847-13.847 13.847h-67.048c-7.6712 0-13.847-6.1757-13.847-13.847v-67.048c0-7.6712 6.1757-13.847 13.847-13.847zm81.024 47.371a47.5 47.5 0 0 1-47.5 47.5 47.5 47.5 0 0 1-47.5-47.5 47.5 47.5 0 0 1 47.5-47.5 47.5 47.5 0 0 1 47.5 47.5z" stroke-linecap="round" stroke-width="5.2582" style="paint-order:markers stroke fill"/>
+    </g>
+</svg>
+"""
+
 
 
 def add_first_page_number(canvas, doc):
@@ -84,7 +129,8 @@ async def boards_report(file_location):
     data = copy(table_manager.data)
 
     for ip in data:
-        data[ip]["hashrate"] = float(data[ip]["hashrate"].replace("TH/s", "").strip())
+        if isinstance(data[ip]["hashrate"], str):
+            data[ip]["hashrate"] = float(data[ip]["hashrate"].replace("TH/s", "").strip())
 
     list_data = []
     for ip in data.keys():
@@ -95,16 +141,14 @@ async def boards_report(file_location):
     list_data = sorted(
         list_data, reverse=False, key=lambda x: ipaddress.ip_address(x["ip"])
     )
-    image_selection_data = {}
+    boards_data = {}
     for miner in list_data:
-        miner_bad_boards = ""
-        if miner["left_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
-            miner_bad_boards += "l"
-        if miner["center_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
-            miner_bad_boards += "c"
-        if miner["right_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
-            miner_bad_boards += "r"
-        image_selection_data[miner["ip"]] = miner_bad_boards
+        boards_data[miner["ip"]] = []
+        for board in miner["hashboards"]:
+            if board["chips"] < (board["expected_chips"] * CHIP_PCT_IDEAL):
+                boards_data[miner["ip"]].append(False)
+            else:
+                boards_data[miner["ip"]].append(True)
 
     doc = SimpleDocTemplate(
         file_location,
@@ -116,9 +160,9 @@ async def boards_report(file_location):
         title=f"Board Report {datetime.datetime.now().strftime('%Y/%b/%d')}",
     )
 
-    pie_chart, board_table = create_boards_pie_chart(image_selection_data, list_data)
+    pie_chart, board_table = create_boards_pie_chart(boards_data, list_data)
 
-    table_data = get_table_data(image_selection_data)
+    table_data = get_table_data(boards_data)
 
     miner_img_table = Table(
         table_data,
@@ -175,7 +219,7 @@ def create_boards_pie_chart(data, list_data: list):
     est_missing_hashrate = [0, 0, 0, 0]
     efficiency = [0, 0, 0, 0]
     for item in data.keys():
-        num_bad_boards[len(data[item])] += 1
+        num_bad_boards[data[item].count(False)] += 1
         est_total_wattage = 0
         est_total_hashrate = 0
         power_limit = 0
@@ -319,29 +363,19 @@ def create_first_page():
 
 
 def create_data_table(data):
-    left_bad_boards = 0
-    right_bad_boards = 0
-    center_bad_boards = 0
     table_data = []
     for miner in data:
         miner_bad_boards = 0
-        if miner["left_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
-            miner_bad_boards += 1
-            left_bad_boards += 1
-        if miner["center_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
-            miner_bad_boards += 1
-            right_bad_boards += 1
-        if miner["right_chips"] < (miner["ideal_chips"] / 3) * CHIP_PCT_IDEAL:
-            miner_bad_boards += 1
-            center_bad_boards += 1
+        for board in miner["hashboards"]:
+            if board["chips"] < (board["expected_chips"] * CHIP_PCT_IDEAL):
+                miner_bad_boards += 1
+
         table_data.append(
             [
                 miner["ip"],
                 miner["model"],
                 miner["total_chips"],
-                miner["left_chips"],
-                miner["center_chips"],
-                miner["right_chips"],
+                miner["ideal_chips"],
                 miner_bad_boards,
             ]
         )
@@ -353,8 +387,6 @@ def create_data_table(data):
             sum([miner[2] for miner in table_data]),
             sum([miner[3] for miner in table_data]),
             sum([miner[4] for miner in table_data]),
-            sum([miner[5] for miner in table_data]),
-            sum([miner[6] for miner in table_data]),
         ]
     )
 
@@ -363,15 +395,14 @@ def create_data_table(data):
             "IP",
             "Model",
             "Total Chips",
-            "Left Board Chips",
-            "Center Board Chips",
-            "Right Board Chips",
+            "Ideal Chips",
             "Failed Boards",
         ],
     )
 
     # create the table
-    t = Table(table_data, repeatRows=1)
+    t = Table(table_data, repeatRows=1, colWidths='*')
+    col_widths = [10, 10, 10, 10, 10]
 
     # generate a basic table style
     table_style = TableStyle(
@@ -389,6 +420,7 @@ def create_data_table(data):
             # gridlines and outline of table
             ("INNERGRID", (0, 0), (-1, -1), 0.25, colors.black),
             ("BOX", (0, 0), (-1, -1), 2, colors.black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ]
     )
 
@@ -397,7 +429,7 @@ def create_data_table(data):
         values,
     ) in enumerate(table_data):
         if not row == 0 and not row == (len(table_data) - 1):
-            failed_boards = values[6]
+            failed_boards = values[4]
             if not failed_boards == 0:
                 table_style.add("TEXTCOLOR", (6, row), (6, row), colors.red)
 
@@ -429,10 +461,11 @@ def get_table_data(data):
     )
     table_width = 0.8 * inch
     for ip in data.keys():
-        img_dec = b64decode(IMAGE_SELECTION_MATRIX[data[ip]])
-        img = BytesIO(img_dec)
-        img.seek(0)
-        image = KeepInFrame(table_width, table_width, [Image(img)])
+        png_data = cairosvg.svg2png(bytestring=create_board_svg(data[ip]))
+        png_buffer = BytesIO(png_data)
+        img = Image(png_buffer)
+        image = KeepInFrame(table_width, table_width, [img])
+
         ip_para = Paragraph(ip, style=IP_STYLE)
 
         table_row.append(
@@ -455,3 +488,31 @@ def get_table_data(data):
 
 def create_recommendations_page(data: list):
     return None
+
+def create_board_svg(boards: List[bool]):
+    root = ElementTree.fromstring(SVG)
+
+    background_group = root.find(".//*[@id='background']")
+
+    spacing = (SVG_WIDTH - (OUTER_SPACING * 2)) / (len(boards) - 1)
+
+    for i, val in enumerate(boards):
+        x = OUTER_SPACING + (i * spacing) - BOARD_WIDTH / 2
+        board_color = BOARD_GOOD_COLOR if val else BOARD_BAD_COLOR
+
+        board = ElementTree.Element(
+            "rect",
+            {
+                "x": str(x),
+                "y": str(5),
+                "width": str(BOARD_WIDTH),
+                "height": str(SVG_HEIGHT-10),
+                "fill": board_color,
+            },
+        )
+
+        background_group.append(board)
+
+    root.attrib["xmlns"] = "http://www.w3.org/2000/svg"
+
+    return ElementTree.tostring(root).decode()

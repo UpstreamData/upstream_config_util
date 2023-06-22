@@ -98,9 +98,10 @@ TABLE_HEADERS = {
         "Ideal": "ideal_chips",
         "Total": "total_chips",
         "Chip %": "percent_ideal_chips",
-        "Left Board": "left_chips",
-        "Center Board": "center_chips",
-        "Right Board": "right_chips",
+        "Board 1": "board_1_chips",
+        "Board 2": "board_2_chips",
+        "Board 3": "board_3_chips",
+        "Board 4": "board_4_chips",
     },
     "CMD": {"IP": "ip", "Model": "model", "Version": "fw_ver", "Output": "output"},
     "POOLS_ALL": {
@@ -308,7 +309,7 @@ def get_boards_layout():
     ]
     add_length = TABLE_TOTAL_WIDTH - sum(BOARDS_COL_WIDTHS)
     for i in range(3):
-        BOARDS_COL_WIDTHS.append(round(add_length / 3))
+        BOARDS_COL_WIDTHS.append(round(add_length / 4))
     boards_layout = [
         [
             sg.Input(visible=False, enable_events=True, key="boards_report_file"),
