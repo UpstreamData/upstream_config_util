@@ -16,6 +16,53 @@ if sys.platform == "win32":
 
 version = datetime.datetime.now()
 version = version.strftime("%y.%m.%d")
+PACKAGES = [
+    "aiohttp",
+    "aiosignal",
+    "anyio",
+    "async_timeout",
+    "asyncssh",
+    "attrs",
+    "certifi",
+    "cffi",
+    "charset_normalizer",
+    "contourpy",
+    "cryptography",
+    "cssselect2",
+    "cycler",
+    "exceptiongroup",
+    "frozenlist",
+    "h11",
+    "httpcore",
+    "httpx",
+    "idna",
+    "kiwisolver",
+    "lxml",
+    "matplotlib",
+    "multidict",
+    "numpy",
+    "packaging",
+    "passlib",
+    "PIL",
+    "pyaml",
+    "pyasic",
+    "pycparser",
+    "pyparsing",
+    "pyperclip",
+    "PySimpleGUI",
+    "pyaml",
+    "reportlab",
+    "setuptools_scm",
+    "six",
+    "sniffio",
+    "svglib",
+    "tinycss2",
+    "toml",
+    "tomli",
+    "typing_extensions",
+    "webencodings",
+    "yarl",
+]
 
 
 setup(
@@ -29,6 +76,7 @@ setup(
                 os.path.join(os.getcwd(), "settings/settings.toml"),
                 os.path.join(os.getcwd(), "README.md"),
             ],
+            "packages": PACKAGES
         },
     },
     executables=[
