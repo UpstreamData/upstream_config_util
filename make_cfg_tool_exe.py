@@ -9,7 +9,6 @@ import datetime
 import sys
 import os
 from cx_Freeze import setup, Executable
-from setuptools import find_packages
 
 base = None
 if sys.platform == "win32":
