@@ -102,10 +102,13 @@ class TableManager(metaclass=Singleton):
             data["fault_light"] = False
 
         for key in data.keys():
-            self.data[data["ip"]][key] = data[key]
+            if key == "model":
+                self.data[data["ip"]][key] = data[key] if data[key] is not None else "Unknown"
+            else:
+                self.data[data["ip"]][key] = data[key] if data[key] is not None else 0
 
         for board in data.get("hashboards", {}):
-            self.data[data["ip"]][f"board_{board['slot'] + 1}_chips"] = board["chips"]
+            self.data[data["ip"]][f"board_{board['slot'] + 1}_chips"] = board["chips"] if board["chips"] is not None else 0
 
         self.update_tables()
 
@@ -167,11 +170,11 @@ class TableManager(metaclass=Singleton):
                 if not isinstance(item["hashrate"], str):
                     item[
                         "hashrate"
-                    ] = f"{format(float(item['hashrate']), '.2f').rjust(6, ' ')} TH/s"
+                    ] = f"{format(float(item['hashrate'] if item['hashrate'] is not None else 0), '.2f').rjust(6, ' ')} TH/s"
 
             if "percent_ideal" in keys:
                 if not isinstance(item["percent_ideal"], str):
-                    item["percent_ideal"] = f"{item['percent_ideal']}%"
+                    item["percent_ideal"] = f"{item['percent_ideal'] if item['percent_ideal'] is not None else 0}%"
 
             for _key in keys:
                 for table in TABLE_HEADERS:
@@ -210,7 +213,6 @@ class TableManager(metaclass=Singleton):
 
     def _get_sort(self, data_key: str):
         if DATA_HEADER_MAP[self.sort_key] not in self.data[data_key]:
-            print(self.data[data_key])
             return ""
 
         if self.sort_key == "IP":
