@@ -130,5 +130,5 @@ async def _get_miner_data(miner):
 
 async def _get_data(miner):
     return (
-        await miner.get_data(data_to_get=DATA_TO_GET)
+        await miner.get_data(include=DATA_TO_GET)
     ).asdict()
