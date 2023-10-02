@@ -1,12 +1,11 @@
 import asyncio
 import webbrowser
 
-from pyasic.miners.miner_factory import MinerFactory, miner_factory
+from pyasic.miners.miner_factory import miner_factory
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.layout import TABLE_KEYS
 from upstream_config_util.layout import window, update_prog_bar, TABLE_HEADERS
-from upstream_config_util.tables import TableManager, DATA_HEADER_MAP
-from settings import DATA_TO_GET
+from upstream_config_util.tables import TableManager
 
 progress_bar_len = 0
 
@@ -78,6 +77,4 @@ async def update_miners_data(miners: list):
 
 
 async def _get_data(miner):
-    return (
-        await miner.get_data(data_to_get=DATA_TO_GET)
-    ).asdict()
+    return (await miner.get_data()).asdict()

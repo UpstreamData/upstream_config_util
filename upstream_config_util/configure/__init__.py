@@ -4,7 +4,7 @@ import PySimpleGUI as sg
 
 from pyasic.config import MinerConfig
 from pyasic.miners.miner_factory import miner_factory
-from settings import CFG_UTIL_CONFIG_THREADS as CONFIG_THREADS
+import settings
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.general import update_miners_data
 from upstream_config_util.layout import window, update_prog_bar
@@ -55,7 +55,7 @@ async def send_config_generator(miners: list, config, last_octet_ip_user: bool):
     config_tasks = []
     config = MinerConfig().from_yaml(config)
     for miner in miners:
-        if len(config_tasks) >= CONFIG_THREADS:
+        if len(config_tasks) >= settings.get("config_threads", 300):
             configured = asyncio.as_completed(config_tasks)
             config_tasks = []
             for sent_config in configured:

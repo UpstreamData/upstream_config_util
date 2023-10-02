@@ -5,8 +5,7 @@ from pyasic.miners.miner_factory import miner_factory
 from pyasic.network import MinerNetwork
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.layout import window, update_prog_bar, TABLE_HEADERS
-from upstream_config_util.tables import clear_tables, TableManager, DATA_HEADER_MAP
-from settings import DATA_TO_GET
+from upstream_config_util.tables import clear_tables, TableManager
 
 
 class Singleton(type):
@@ -129,6 +128,4 @@ async def _get_miner_data(miner):
 
 
 async def _get_data(miner):
-    return (
-        await miner.get_data(include=DATA_TO_GET)
-    ).asdict()
+    return (await miner.get_data()).asdict()

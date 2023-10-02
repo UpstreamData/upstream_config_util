@@ -4,83 +4,20 @@ from .imgs import WINDOW_ICON
 
 import asyncio
 
-WINDOW_BG = "#0F4C75"
-
-PROGRESS_BG = "#FFFFFF"
-PROGRESS_FULL = "#00A8CC"
-
-MAIN_TABS_BG = "#0F4C75"
-MAIN_TABS_SELECTED = MAIN_TABS_BG
-MAIN_TABS_NORMAL = "#BBE1FA"
-MAIN_TABS_TEXT_SELECTED = "#FFFFFF"
-MAIN_TABS_TEXT_NORMAL = "#000000"
-
+WINDOW_COLOR = "#F0F0F0"
+GREY = "#d0d0d0"
 TAB_PAD = 0
-
-TEXT_COLOR = "#FFFFFF"
-BTN_TEXT_COLOR = "#000000"
-BTN_COLOR = "#3282B8"
-BTN_DISABLED_COLOR = "#BBE1FA"
-BTN_DISABLED_TEXT_COLOR = "#1B262C"
-BTN_DISABLED = BTN_DISABLED_TEXT_COLOR, BTN_DISABLED_COLOR
 BTN_BORDER = 1
-
-INFO_BTN_TEXT_COLOR = "#000000"
-INFO_BTN_BG = "#FFFFFF"
-
-INPUT_BG = "#BBE1FA"
-INPUT_TEXT = "#000000"
-
-POOLS_TABS_BG = "#3282B8"
-POOLS_TABS_SELECTED = POOLS_TABS_BG
-POOLS_TABS_NORMAL = "#BBE1FA"
-POOLS_TABS_TEXT_SELECTED = "#FFFFFF"
-POOLS_TABS_TEXT_NORMAL = "#000000"
 POOLS_TABLE_PAD = 0
-
-TABLE_BG = "#BBE1FA"
-TABLE_TEXT = "#000000"
-TABLE_HEADERS_COLOR = "#3282B8"
-TABLE_HEADERS_TEXT_COLOR = "#000000"
-TABLE_HEADERS_HOVER = "#27496D"
 TABLE_BORDER = 1
 TABLE_HEADER_BORDER = 3
 TABLE_PAD = 0
-
-SCROLLBAR_TROUGH_COLOR = "#BBE1FA"
-SCROLLBAR_BACKGROUND_COLOR = "#3282B8"
-SCROLLBAR_ARROW_COLOR = "#0F4C75"
 SCROLLBAR_WIDTH = 16
 SCROLLBAR_ARROW_WIDTH = 16
 SCROLLBAR_RELIEF = sg.RELIEF_RIDGE
-
-POOLS_TABLE_BG = TABLE_BG
-POOLS_TABLE_TEXT = TABLE_TEXT
-POOLS_TABLE_HEADERS_COLOR = TABLE_HEADERS_COLOR
-POOLS_TABLE_HEADERS_TEXT_COLOR = TABLE_HEADERS_TEXT_COLOR
-POOLS_TABLE_HEADERS_HOVER = TABLE_HEADERS_HOVER
 POOLS_TABLE_BORDER = 1
 POOLS_TABLE_HEADER_BORDER = 3
-
-sg.set_options(font=("Noto Mono", 10))
-# Add your new theme colors and settings
-
-
-sg.LOOK_AND_FEEL_TABLE["cfg_util_theme"] = {
-    "BACKGROUND": WINDOW_BG,
-    "TEXT": TEXT_COLOR,
-    "INPUT": INPUT_BG,
-    "TEXT_INPUT": INPUT_TEXT,
-    "SCROLL": "#142850",
-    "BUTTON": (BTN_TEXT_COLOR, BTN_COLOR),  # Text Color, Background
-    "PROGRESS": (PROGRESS_FULL, PROGRESS_BG),  # Filled, Empty
-    "BORDER": 1,
-    "SLIDER_DEPTH": 0,
-    "PROGRESS_DEPTH": 0,
-}
-
-# Switch to use your newly created theme
-sg.theme("cfg_util_theme")
+sg.theme("SystemDefaultForReal")
 
 TABLE_HEADERS = {
     "SCAN": {
@@ -225,20 +162,21 @@ async def update_prog_bar(count: int, _max: int = None):
 def get_scan_layout():
     scan_layout = [
         [
-            sg.Text("Scan IP", background_color=MAIN_TABS_BG, pad=((0, 5), (1, 1))),
+            sg.Text(
+                "Scan IP",
+                pad=((0, 5), (1, 1)),
+            ),
             sg.InputText(key="scan_ip", size=(31, 1), focus=True),
             sg.Button(
                 "Scan",
                 key="btn_scan",
                 border_width=BTN_BORDER,
-                mouseover_colors=BTN_DISABLED,
                 bind_return_key=True,
             ),
             sg.Button(
                 "Cancel",
                 key="scan_cancel",
                 border_width=BTN_BORDER,
-                mouseover_colors=BTN_DISABLED,
                 visible=False,
             ),
         ],
@@ -259,7 +197,11 @@ def get_scan_layout():
                 key="scan_web",
                 border_width=BTN_BORDER,
             ),
-            sg.Button("RECORD DATA", key="record", border_width=BTN_BORDER),
+            sg.Button(
+                "RECORD DATA",
+                key="record",
+                border_width=BTN_BORDER,
+            ),
             sg.Button(
                 "STOP LISTENING",
                 key="scan_cancel_listen",
@@ -276,15 +218,8 @@ def get_scan_layout():
                 justification="center",
                 key="scan_table",
                 col_widths=SCAN_COL_WIDTHS,
-                background_color=TABLE_BG,
-                text_color=TABLE_TEXT,
-                header_background_color=TABLE_HEADERS_COLOR,
-                header_text_color=TABLE_HEADERS_TEXT_COLOR,
                 border_width=TABLE_BORDER,
                 header_border_width=TABLE_HEADER_BORDER,
-                sbar_trough_color=SCROLLBAR_TROUGH_COLOR,
-                sbar_background_color=SCROLLBAR_BACKGROUND_COLOR,
-                sbar_arrow_color=SCROLLBAR_ARROW_COLOR,
                 sbar_width=SCROLLBAR_WIDTH,
                 sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
                 sbar_relief=SCROLLBAR_RELIEF,
@@ -354,15 +289,8 @@ def get_boards_layout():
                 justification="center",
                 key="boards_table",
                 col_widths=BOARDS_COL_WIDTHS,
-                background_color=TABLE_BG,
-                text_color=TABLE_TEXT,
-                header_background_color=TABLE_HEADERS_COLOR,
-                header_text_color=TABLE_HEADERS_TEXT_COLOR,
                 border_width=TABLE_BORDER,
                 header_border_width=TABLE_HEADER_BORDER,
-                sbar_trough_color=SCROLLBAR_TROUGH_COLOR,
-                sbar_background_color=SCROLLBAR_BACKGROUND_COLOR,
-                sbar_arrow_color=SCROLLBAR_ARROW_COLOR,
                 sbar_width=SCROLLBAR_WIDTH,
                 sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
                 sbar_relief=SCROLLBAR_RELIEF,
@@ -383,14 +311,14 @@ def get_command_layout():
         IP_COL_WIDTH,
         MODEL_COL_WIDTH,
         MODEL_COL_WIDTH,
-        TABLE_TOTAL_WIDTH - (IP_COL_WIDTH + MODEL_COL_WIDTH + MODEL_COL_WIDTH + IMAGE_COL_WIDTH + 4),
+        TABLE_TOTAL_WIDTH
+        - (IP_COL_WIDTH + MODEL_COL_WIDTH + MODEL_COL_WIDTH + IMAGE_COL_WIDTH + 4),
     ]
 
     command_layout = [
         [
             sg.Text(
                 "Custom Command",
-                background_color=MAIN_TABS_BG,
                 pad=((0, 1), (1, 1)),
             ),
             sg.InputText(key="cmd_txt", expand_x=True),
@@ -448,15 +376,8 @@ def get_command_layout():
                 justification="center",
                 key="cmd_table",
                 col_widths=col_widths,
-                background_color=TABLE_BG,
-                text_color=TABLE_TEXT,
-                header_background_color=TABLE_HEADERS_COLOR,
-                header_text_color=TABLE_HEADERS_TEXT_COLOR,
                 border_width=TABLE_BORDER,
                 header_border_width=TABLE_HEADER_BORDER,
-                sbar_trough_color=SCROLLBAR_TROUGH_COLOR,
-                sbar_background_color=SCROLLBAR_BACKGROUND_COLOR,
-                sbar_arrow_color=SCROLLBAR_ARROW_COLOR,
                 sbar_width=SCROLLBAR_WIDTH,
                 sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
                 sbar_relief=SCROLLBAR_RELIEF,
@@ -523,15 +444,8 @@ def get_pools_layout():
                                         max_col_width=15,
                                         justification="center",
                                         key="pools_table",
-                                        background_color=POOLS_TABLE_BG,
-                                        text_color=POOLS_TABLE_TEXT,
-                                        header_background_color=POOLS_TABLE_HEADERS_COLOR,
-                                        header_text_color=POOLS_TABLE_HEADERS_TEXT_COLOR,
                                         border_width=POOLS_TABLE_BORDER,
                                         header_border_width=POOLS_TABLE_HEADER_BORDER,
-                                        sbar_trough_color=SCROLLBAR_TROUGH_COLOR,
-                                        sbar_background_color=SCROLLBAR_BACKGROUND_COLOR,
-                                        sbar_arrow_color=SCROLLBAR_ARROW_COLOR,
                                         sbar_width=SCROLLBAR_WIDTH,
                                         sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
                                         sbar_relief=SCROLLBAR_RELIEF,
@@ -544,7 +458,6 @@ def get_pools_layout():
                                     )
                                 ]
                             ],
-                            background_color=POOLS_TABS_BG,
                             pad=TAB_PAD,
                         )
                     ],
@@ -563,15 +476,8 @@ def get_pools_layout():
                                         max_col_width=15,
                                         justification="center",
                                         key="pools_1_table",
-                                        background_color=POOLS_TABLE_BG,
-                                        text_color=POOLS_TABLE_TEXT,
-                                        header_background_color=POOLS_TABLE_HEADERS_COLOR,
-                                        header_text_color=POOLS_TABLE_HEADERS_TEXT_COLOR,
                                         border_width=POOLS_TABLE_BORDER,
                                         header_border_width=POOLS_TABLE_HEADER_BORDER,
-                                        sbar_trough_color=SCROLLBAR_TROUGH_COLOR,
-                                        sbar_background_color=SCROLLBAR_BACKGROUND_COLOR,
-                                        sbar_arrow_color=SCROLLBAR_ARROW_COLOR,
                                         sbar_width=SCROLLBAR_WIDTH,
                                         sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
                                         sbar_relief=SCROLLBAR_RELIEF,
@@ -584,7 +490,6 @@ def get_pools_layout():
                                     )
                                 ]
                             ],
-                            background_color=POOLS_TABS_BG,
                         )
                     ],
                     [
@@ -602,15 +507,8 @@ def get_pools_layout():
                                         max_col_width=15,
                                         justification="center",
                                         key="pools_2_table",
-                                        background_color=POOLS_TABLE_BG,
-                                        text_color=POOLS_TABLE_TEXT,
-                                        header_background_color=POOLS_TABLE_HEADERS_COLOR,
-                                        header_text_color=POOLS_TABLE_HEADERS_TEXT_COLOR,
                                         border_width=POOLS_TABLE_BORDER,
                                         header_border_width=POOLS_TABLE_HEADER_BORDER,
-                                        sbar_trough_color=SCROLLBAR_TROUGH_COLOR,
-                                        sbar_background_color=SCROLLBAR_BACKGROUND_COLOR,
-                                        sbar_arrow_color=SCROLLBAR_ARROW_COLOR,
                                         sbar_width=SCROLLBAR_WIDTH,
                                         sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
                                         sbar_relief=SCROLLBAR_RELIEF,
@@ -623,15 +521,11 @@ def get_pools_layout():
                                     )
                                 ]
                             ],
-                            background_color=POOLS_TABS_BG,
                         )
                     ],
                 ],
-                background_color=MAIN_TABS_BG,
-                title_color=POOLS_TABS_TEXT_NORMAL,
-                tab_background_color=POOLS_TABS_NORMAL,
-                selected_background_color=POOLS_TABS_SELECTED,
-                selected_title_color=POOLS_TABS_TEXT_SELECTED,
+                background_color=WINDOW_COLOR,
+                selected_background_color=WINDOW_COLOR,
                 border_width=0,
                 tab_border_width=2,
                 pad=TAB_PAD,
@@ -691,11 +585,10 @@ def get_config_layout():
                 border_width=BTN_BORDER,
                 pad=((5, 5), (3, 2)),
             ),
-            sg.Push(background_color=MAIN_TABS_BG),
+            sg.Push(),
             sg.Checkbox(
                 "Append IP to Username",
                 key="cfg_append_ip",
-                background_color=MAIN_TABS_BG,
                 pad=((5, 5), (3, 2)),
             ),
         ],
@@ -707,15 +600,8 @@ def get_config_layout():
                 max_col_width=15,
                 justification="center",
                 key="cfg_table",
-                background_color=TABLE_BG,
-                text_color=TABLE_TEXT,
-                header_background_color=TABLE_HEADERS_COLOR,
-                header_text_color=TABLE_HEADERS_TEXT_COLOR,
                 header_border_width=TABLE_HEADER_BORDER,
                 border_width=TABLE_BORDER,
-                sbar_trough_color=SCROLLBAR_TROUGH_COLOR,
-                sbar_background_color=SCROLLBAR_BACKGROUND_COLOR,
-                sbar_arrow_color=SCROLLBAR_ARROW_COLOR,
                 sbar_width=SCROLLBAR_WIDTH,
                 sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
                 sbar_relief=SCROLLBAR_RELIEF,
@@ -730,9 +616,6 @@ def get_config_layout():
                 size=(30, TABLE_HEIGHT + 3),
                 key="cfg_config_txt",
                 font=("Noto Mono", 9),
-                sbar_trough_color=SCROLLBAR_TROUGH_COLOR,
-                sbar_background_color=SCROLLBAR_BACKGROUND_COLOR,
-                sbar_arrow_color=SCROLLBAR_ARROW_COLOR,
                 sbar_width=SCROLLBAR_WIDTH,
                 sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
                 sbar_relief=SCROLLBAR_RELIEF,
@@ -777,7 +660,6 @@ layout = [
                     sg.Tab(
                         "Scan",
                         get_scan_layout(),
-                        background_color=MAIN_TABS_BG,
                         pad=TAB_PAD,
                     )
                 ],
@@ -785,7 +667,6 @@ layout = [
                     sg.Tab(
                         "Boards",
                         get_boards_layout(),
-                        background_color=MAIN_TABS_BG,
                         pad=TAB_PAD,
                     )
                 ],
@@ -793,7 +674,6 @@ layout = [
                     sg.Tab(
                         "Pools",
                         get_pools_layout(),
-                        background_color=MAIN_TABS_BG,
                         pad=TAB_PAD,
                     )
                 ],
@@ -801,7 +681,6 @@ layout = [
                     sg.Tab(
                         "Configure",
                         get_config_layout(),
-                        background_color=MAIN_TABS_BG,
                         pad=TAB_PAD,
                     )
                 ],
@@ -809,15 +688,12 @@ layout = [
                     sg.Tab(
                         "Command",
                         get_command_layout(),
-                        background_color=MAIN_TABS_BG,
                         pad=TAB_PAD,
                     )
                 ],
             ],
-            tab_background_color=MAIN_TABS_NORMAL,
-            title_color=MAIN_TABS_TEXT_NORMAL,
-            selected_background_color=MAIN_TABS_BG,
-            selected_title_color=MAIN_TABS_TEXT_SELECTED,
+            background_color=WINDOW_COLOR,
+            selected_background_color=WINDOW_COLOR,
             border_width=0,
             tab_border_width=2,
             expand_y=True,

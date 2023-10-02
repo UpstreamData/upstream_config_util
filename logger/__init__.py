@@ -1,11 +1,13 @@
 import logging
-from settings import DEBUG, LOGFILE
+import os
+
+import settings
 
 
 def init_logger():
-    if LOGFILE:
+    if settings.get("log_to_file", False):
         logging.basicConfig(
-            filename="logfile.txt",
+            filename=os.path.join(settings.BASE_DIR, "logfile.txt"),
             filemode="a",
             format="%(pathname)s:%(lineno)d in %(funcName)s\n[%(levelname)s][%(asctime)s](%(name)s) - %(message)s",
             datefmt="%x %X",
@@ -18,7 +20,7 @@ def init_logger():
 
     _logger = logging.getLogger()
 
-    if DEBUG:
+    if settings.get("debug", False):
         _logger.setLevel(logging.DEBUG)
         logging.getLogger("asyncssh").setLevel(logging.DEBUG)
     else:

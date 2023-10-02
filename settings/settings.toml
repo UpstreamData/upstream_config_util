@@ -1,17 +1,15 @@
-get_version_retries = 3
-miner_get_data_retries = 3
-ping_retries = 2
-ping_timeout = 3 # Seconds
+ping_retries = 1
+ping_timeout = 3
 scan_threads = 300
-config_threads = 300
+get_miner_retries = 1
+get_data_retries = 1
+whatsminer_password = "admin"
+innosilicon_password = "admin"
+antminer_password = "root"
+bosminer_password = "root"
+vnish_password = "admin"
+goldshell_password = "123456789"
 reboot_threads = 300
-
-logfile = false
-
-speed_optimizations = true
-
-### DEBUG MODE ###
-# change this to debug = true
-# to enable debug mode.
+config_threads = 300
+log_to_file = false
 debug = false
-# debug = true

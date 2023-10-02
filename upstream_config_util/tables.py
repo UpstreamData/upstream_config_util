@@ -32,7 +32,7 @@ DATA_HEADER_MAP = {
     "Power Limit": "wattage_limit",
     "Light": "fault_light",
     "Output": "output",
-    "Version": "fw_ver"
+    "Version": "fw_ver",
 }
 
 
@@ -103,12 +103,16 @@ class TableManager(metaclass=Singleton):
 
         for key in data.keys():
             if key == "model":
-                self.data[data["ip"]][key] = data[key] if data[key] is not None else "Unknown"
+                self.data[data["ip"]][key] = (
+                    data[key] if data[key] is not None else "Unknown"
+                )
             else:
                 self.data[data["ip"]][key] = data[key] if data[key] is not None else 0
 
         for board in data.get("hashboards", {}):
-            self.data[data["ip"]][f"board_{board['slot'] + 1}_chips"] = board["chips"] if board["chips"] is not None else 0
+            self.data[data["ip"]][f"board_{board['slot'] + 1}_chips"] = (
+                board["chips"] if board["chips"] is not None else 0
+            )
 
         self.update_tables()
 
@@ -174,7 +178,9 @@ class TableManager(metaclass=Singleton):
 
             if "percent_ideal" in keys:
                 if not isinstance(item["percent_ideal"], str):
-                    item["percent_ideal"] = f"{item['percent_ideal'] if item['percent_ideal'] is not None else 0}%"
+                    item[
+                        "percent_ideal"
+                    ] = f"{item['percent_ideal'] if item['percent_ideal'] is not None else 0}%"
 
             for _key in keys:
                 for table in TABLE_HEADERS:
@@ -219,11 +225,11 @@ class TableManager(metaclass=Singleton):
             return ipaddress.ip_address(self.data[data_key]["ip"])
 
         if self.sort_key == "Chip %":
-            if self.data[data_key]["percent_ideal"] == "":
+            if self.data[data_key]["percent_ideal_chips"] == "":
                 return 0
-            if isinstance(self.data[data_key]["percent_ideal"], int):
-                return self.data[data_key]["percent_ideal"]
-            return int((self.data[data_key]["percent_ideal"]).replace("%", ""))
+            if isinstance(self.data[data_key]["percent_ideal_chips"], int):
+                return self.data[data_key]["percent_ideal_chips"]
+            return int((self.data[data_key]["percent_ideal_chips"]).replace("%", ""))
 
         if self.sort_key == "Hashrate":
             if self.data[data_key]["hashrate"] == "":

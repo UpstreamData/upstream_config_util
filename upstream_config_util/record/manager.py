@@ -2,10 +2,9 @@ import asyncio
 
 from upstream_config_util.record.pdf import generate_pdf
 
-from pyasic.miners.miner_factory import MinerFactory, miner_factory
+from pyasic.miners.miner_factory import miner_factory
 
 from typing import List, Dict
-from settings import DATA_TO_GET
 
 
 (RECORDING, PAUSING, PAUSED, RESUMING, STOPPING, DONE) = range(6)
@@ -48,7 +47,7 @@ class RecordingManager(metaclass=Singleton):
 
             tasks = []
             for miner in self.miners:
-                tasks.append(miner.get_data(data_to_get=DATA_TO_GET))
+                tasks.append(miner.get_data())
 
             for complete in asyncio.as_completed(tasks):
                 data = await complete

@@ -4,7 +4,7 @@ from pyasic.miners.makes import WhatsMiner
 from upstream_config_util.layout import window, update_prog_bar, WINDOW_ICON
 from upstream_config_util.tables import TableManager
 from upstream_config_util.decorators import disable_buttons
-from settings import CFG_UTIL_CONFIG_THREADS as COMMAND_THREADS, REBOOT_THREADS
+import settings
 from typing import Tuple
 
 import PySimpleGUI as sg
@@ -59,7 +59,9 @@ async def btn_wm_unlock(ip_idxs: list):
         async for done in sent:
             success = done["Status"]
             if success:
-                table_manager.data[str(done["IP"])]["output"] = "Unlock command succeeded."
+                table_manager.data[str(done["IP"])][
+                    "output"
+                ] = "Unlock command succeeded."
             else:
                 table_manager.data[str(done["IP"])]["output"] = "Unlock command failed."
             p_bar_len += 1
@@ -73,7 +75,7 @@ async def wm_unlock_generator(miners: list):
     loop = asyncio.get_event_loop()
     unlock_tasks = []
     for miner in miners:
-        if len(unlock_tasks) >= REBOOT_THREADS:
+        if len(unlock_tasks) >= settings.get("config_threads", 300):
             cmd_sent = asyncio.as_completed(unlock_tasks)
             unlock_tasks = []
             for done in cmd_sent:
@@ -83,13 +85,13 @@ async def wm_unlock_generator(miners: list):
     for done in cmd_sent:
         yield await done
 
+
 async def _wm_unlock(miner):
     try:
         proc = await miner._reset_api_pwd_to_admin("root")
         return {"IP": miner.ip, "Status": proc}
     except:
         return {"IP": miner.ip, "Status": False}
-
 
 
 async def _fault_light(ip: str, on: bool) -> Tuple[str, bool]:
@@ -132,7 +134,7 @@ async def reboot_generator(miners: list):
     loop = asyncio.get_event_loop()
     reboot_tasks = []
     for miner in miners:
-        if len(reboot_tasks) >= REBOOT_THREADS:
+        if len(reboot_tasks) >= settings.get("reboot_threads", 300):
             cmd_sent = asyncio.as_completed(reboot_tasks)
             reboot_tasks = []
             for done in cmd_sent:
@@ -194,7 +196,7 @@ async def send_command_generator(miners: list, command: str):
     loop = asyncio.get_event_loop()
     command_tasks = []
     for miner in miners:
-        if len(command_tasks) >= COMMAND_THREADS:
+        if len(command_tasks) >= settings.get("config_threads", 300):
             cmd_sent = asyncio.as_completed(command_tasks)
             command_tasks = []
             for done in cmd_sent:
