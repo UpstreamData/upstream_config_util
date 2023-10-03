@@ -215,13 +215,15 @@ CANCEL_LISTEN_BTNS = [
     "cfg_cancel_listen",
 ]
 
+LISTENER = MinerListener()
+
 
 @disable_buttons("Listening for Miner")
 async def btn_listen():
     window["cmd_listen"].update(visible=False)
     for btn in CANCEL_LISTEN_BTNS:
         window[btn].update(visible=True)
-    async for miner in MinerListener().listen():
+    async for miner in LISTENER.listen():
         sg.popup(
             f"IP: {miner['IP']}, MAC: {miner['MAC']}",
             title="Found Miner",
@@ -231,7 +233,7 @@ async def btn_listen():
 
 
 async def btn_cancel_listen():
-    await MinerListener().cancel()
+    await LISTENER.cancel()
     window["cmd_listen"].update(visible=True)
     for btn in CANCEL_LISTEN_BTNS:
         window[btn].update(visible=False)

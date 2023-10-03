@@ -11,10 +11,10 @@ progress_bar_len = 0
 
 DEFAULT_DATA = set()
 headers = []
-for table in TABLE_HEADERS:
-    for header in TABLE_HEADERS[table]:
+for t in TABLE_HEADERS:
+    for header in TABLE_HEADERS[t]:
         headers.append(headers)
-        DEFAULT_DATA.add(TABLE_HEADERS[table][header])
+        DEFAULT_DATA.add(TABLE_HEADERS[t][header])
 
 
 def btn_all(table, selected):

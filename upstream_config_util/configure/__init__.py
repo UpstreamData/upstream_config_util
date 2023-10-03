@@ -99,13 +99,13 @@ def generate_config(
         return
 
     if v2_allowed:
-        url_1 = "stratum2+tcp://v2.us-east.stratum.slushpool.com/u95GEReVMjK6k5YqiSFNqqTnKU4ypU2Wm8awa6tmbmDmk1bWt"
-        url_2 = "stratum2+tcp://v2.stratum.slushpool.com/u95GEReVMjK6k5YqiSFNqqTnKU4ypU2Wm8awa6tmbmDmk1bWt"
-        url_3 = "stratum+tcp://stratum.slushpool.com:3333"
+        url_1 = "stratum2+tcp://v2.us-east.stratum.braiins.com/u95GEReVMjK6k5YqiSFNqqTnKU4ypU2Wm8awa6tmbmDmk1bWt"
+        url_2 = "stratum2+tcp://v2.stratum.braiins.com/u95GEReVMjK6k5YqiSFNqqTnKU4ypU2Wm8awa6tmbmDmk1bWt"
+        url_3 = "stratum+tcp://stratum.braiins.com:3333"
     else:
-        url_1 = "stratum+tcp://ca.stratum.slushpool.com:3333"
-        url_2 = "stratum+tcp://us-east.stratum.slushpool.com:3333"
-        url_3 = "stratum+tcp://stratum.slushpool.com:3333"
+        url_1 = "stratum+tcp://ca.stratum.braiins.com:3333"
+        url_2 = "stratum+tcp://us-east.stratum.braiins.com:3333"
+        url_3 = "stratum+tcp://stratum.braiins.com:3333"
     if not advanced_cfg:
         config = {
             "group": [
@@ -232,11 +232,7 @@ async def generate_config_ui():
 
 def generate_config_layout():
     config_layout = [
-        [
-            sg.Text(
-                "Enter your pool username and password below to generate a config for SlushPool."
-            )
-        ],
+        [sg.Text("Enter your pool username and password below to generate a config.")],
         [sg.Text("")],
         [
             sg.Text("Username:", size=(19, 1)),
