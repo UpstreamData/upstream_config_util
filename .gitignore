@@ -2,4 +2,4 @@ venv
 build
 logfile.txt
 .idea
-settings.toml
+settings/settings.toml
