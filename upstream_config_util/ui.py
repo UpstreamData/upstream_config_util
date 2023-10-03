@@ -1,29 +1,15 @@
-import PySimpleGUI as sg
 import asyncio
 import sys
-from upstream_config_util.boards import boards_report
-from upstream_config_util.imgs import TkImages
-from upstream_config_util import scan
-from upstream_config_util.commands import (
-    btn_light,
-    btn_reboot,
-    btn_backend,
-    btn_command,
-    btn_cancel_listen,
-    btn_listen,
-    btn_wm_unlock,
-)
-from upstream_config_util.configure import (
-    generate_config_ui,
-    btn_import,
-    btn_config,
-)
-from upstream_config_util.record import record_ui
-from upstream_config_util.layout import window, TABLE_KEYS
-from upstream_config_util.general import btn_all, btn_web, btn_refresh
-from upstream_config_util import tables
 import tkinter as tk
+
+import PySimpleGUI as sg
 import pyperclip
+
+from upstream_config_util import scan, boards, configure
+from upstream_config_util import tables
+from upstream_config_util.general import btn_all, btn_web, btn_refresh
+from upstream_config_util.imgs import TkImages
+from upstream_config_util.layout import window, TABLE_KEYS
 
 
 def _tree_header_click_handler(event, table):
@@ -61,15 +47,7 @@ def _table_copy(table):
 
 
 def _table_select_all(table):
-    if table in TABLE_KEYS["table"]:
-        window[table].update(
-            select_rows=([row for row in range(len(window[table].Values))])
-        )
-
-    if table in TABLE_KEYS["tree"]:
-        _tree = window[table]
-        rows_to_select = [i for i in _tree.Widget.get_children()]
-        _tree.Widget.selection_set(rows_to_select)
+    btn_all(table, window[table].SelectedRows)
 
 
 def bind_copy(key):
@@ -113,46 +91,11 @@ async def ui():
                     table = window[event[0]].Widget
                     tables.update_sort_key(table.heading(event[2][1])["text"])
 
-        # # scan tab
-        # if event == "scan_all":
-        #     _table = "scan_table"
-        #     btn_all(_table, value[_table])
-        # if event == "scan_web":
-        #     _table = "scan_table"
-        #     btn_web(_table, value[_table])
-        # if event == "scan_refresh":
-        #     _table = "scan_table"
-        #     asyncio.create_task(btn_refresh(_table, value[_table]))
-        # if event == "btn_scan":
-        #     asyncio.create_task(btn_scan(value["scan_ip"]))
-        # if event == "scan_cancel":
-        #     await scan_cancel()
-        # if event == "record":
-        #     _table = "scan_table"
-        #     if value[_table]:
-        #         ips = [window[_table].Values[row][0] for row in value[_table]]
-        #     else:
-        #         ips = [
-        #             window[_table].Values[row][0]
-        #             for row in range(len(window[_table].Values))
-        #         ]
-        #     asyncio.create_task(record_ui(ips))
         await scan.handle_event(event, value)
 
-        # boards tab
-        if event == "boards_all":
-            _table = "boards_table"
-            btn_all(_table, value[_table])
-        if event == "boards_web":
-            _table = "boards_table"
-            btn_web(_table, value[_table])
-        if event == "boards_refresh":
-            _table = "boards_table"
-            asyncio.create_task(btn_refresh(_table, value[_table]))
-        if event == "boards_report_file":
-            if not value["boards_report_file"] == "":
-                asyncio.create_task(boards_report(value["boards_report_file"]))
-                window["boards_report_file"].update("")
+        await boards.handle_event(event, value)
+
+        await configure.handle_event(event, value)
 
         # pools tab
         if event == "pools_all":
@@ -164,59 +107,6 @@ async def ui():
         if event == "pools_refresh":
             _table = "pools_table"
             asyncio.create_task(btn_refresh(_table, value[_table]))
-
-        # configure tab
-        if event == "cfg_all":
-            _table = "cfg_table"
-            btn_all(_table, value[_table])
-        if event == "cfg_web":
-            _table = "cfg_table"
-            btn_web(_table, value[_table])
-        if event == "cfg_generate":
-            await generate_config_ui()
-        if event == "cfg_import":
-            _table = "cfg_table"
-            asyncio.create_task(btn_import(_table, value[_table]))
-        if event == "cfg_config":
-            _table = "cfg_table"
-            asyncio.create_task(
-                btn_config(
-                    _table,
-                    value[_table],
-                    value["cfg_config_txt"],
-                    value["cfg_append_ip"],
-                )
-            )
-
-        # commands tab
-        if event == "cmd_all":
-            _table = "cmd_table"
-            btn_all(_table, value[_table])
-        if event == "cmd_light":
-            _table = "cmd_table"
-            _ips = value[_table]
-            asyncio.create_task(btn_light(_ips))
-        if event == "cmd_wm_unlock":
-            _table = "cmd_table"
-            _ips = value[_table]
-            asyncio.create_task(btn_wm_unlock(_ips))
-        if event == "cmd_reboot":
-            _table = "cmd_table"
-            _ips = value[_table]
-            asyncio.create_task(btn_reboot(_ips))
-        if event == "cmd_backend":
-            _table = "cmd_table"
-            _ips = value[_table]
-            asyncio.create_task(btn_backend(_ips))
-        if event == "btn_cmd":
-            _table = "cmd_table"
-            _ips = value[_table]
-            asyncio.create_task(btn_command(_ips, value["cmd_txt"]))
-        if event == "cmd_listen":
-            asyncio.create_task(btn_listen())
-        if not isinstance(event, tuple):
-            if event.endswith("cancel_listen"):
-                asyncio.create_task(btn_cancel_listen())
 
         if event == "__TIMEOUT__":
             await asyncio.sleep(0.001)

@@ -6,10 +6,35 @@ from pyasic.config import MinerConfig
 from pyasic.miners.miner_factory import miner_factory
 import settings
 from upstream_config_util.decorators import disable_buttons
-from upstream_config_util.general import update_miners_data
+from upstream_config_util.general import update_miners_data, btn_all, btn_web
 from upstream_config_util.layout import window, update_prog_bar
 
 progress_bar_len = 0
+
+
+async def handle_event(event, value):
+    # configure tab
+    if event == "cfg_all":
+        _table = "cfg_table"
+        btn_all(_table, value[_table])
+    if event == "cfg_web":
+        _table = "cfg_table"
+        btn_web(_table, value[_table])
+    if event == "cfg_generate":
+        await generate_config_ui()
+    if event == "cfg_import":
+        _table = "cfg_table"
+        asyncio.create_task(btn_import(_table, value[_table]))
+    if event == "cfg_config":
+        _table = "cfg_table"
+        asyncio.create_task(
+            btn_config(
+                _table,
+                value[_table],
+                value["cfg_config_txt"],
+                value["cfg_append_ip"],
+            )
+        )
 
 
 @disable_buttons("Importing")

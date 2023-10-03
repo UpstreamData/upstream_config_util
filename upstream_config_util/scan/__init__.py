@@ -9,15 +9,15 @@ from upstream_config_util.general import btn_all, btn_web, btn_refresh
 from upstream_config_util.layout import update_prog_bar, TABLE_HEADERS
 from upstream_config_util.layout import window
 from upstream_config_util.record import record_ui
-from upstream_config_util.tables import TableManager
 from upstream_config_util.tables import clear_tables
+import settings
 
 TABLE = "scan_table"
 
 
 async def handle_event(event, value):
     if event == "scan_all":
-        await btn_all(TABLE, value[TABLE])
+        btn_all(TABLE, value[TABLE])
     if event == "scan_web":
         btn_web(TABLE, value[TABLE])
     if event == "scan_refresh":
@@ -64,12 +64,6 @@ for table in TABLE_HEADERS:
 
 async def scan_cancel():
     await SCAN_TAB_MANAGER.cancel()
-
-
-async def btn_all():
-    window[TABLE].update(
-        select_rows=([row for row in range(len(window[TABLE].Values))])
-    )
 
 
 async def btn_scan(scan_ip: str = None):
@@ -147,4 +141,4 @@ async def _get_miner_data(miner):
 
 
 async def _get_data(miner):
-    return (await miner.get_data()).asdict()
+    return (await miner.get_data(include=settings.get("include"))).asdict()

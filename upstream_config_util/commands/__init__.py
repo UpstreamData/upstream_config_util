@@ -1,6 +1,7 @@
 from pyasic.miners.miner_factory import miner_factory
 from pyasic.miners.miner_listener import MinerListener
 from pyasic.miners.makes import WhatsMiner
+from upstream_config_util.general import btn_all
 from upstream_config_util.layout import window, update_prog_bar, WINDOW_ICON
 from upstream_config_util.tables import TableManager, TABLE_MANAGER
 from upstream_config_util.decorators import disable_buttons
@@ -10,6 +11,38 @@ from typing import Tuple
 import PySimpleGUI as sg
 
 import asyncio
+
+
+async def handle_event(event, value):
+    # commands tab
+    if event == "cmd_all":
+        _table = "cmd_table"
+        btn_all(_table, value[_table])
+    if event == "cmd_light":
+        _table = "cmd_table"
+        _ips = value[_table]
+        asyncio.create_task(btn_light(_ips))
+    if event == "cmd_wm_unlock":
+        _table = "cmd_table"
+        _ips = value[_table]
+        asyncio.create_task(btn_wm_unlock(_ips))
+    if event == "cmd_reboot":
+        _table = "cmd_table"
+        _ips = value[_table]
+        asyncio.create_task(btn_reboot(_ips))
+    if event == "cmd_backend":
+        _table = "cmd_table"
+        _ips = value[_table]
+        asyncio.create_task(btn_backend(_ips))
+    if event == "btn_cmd":
+        _table = "cmd_table"
+        _ips = value[_table]
+        asyncio.create_task(btn_command(_ips, value["cmd_txt"]))
+    if event == "cmd_listen":
+        asyncio.create_task(btn_listen())
+    if not isinstance(event, tuple):
+        if event.endswith("cancel_listen"):
+            asyncio.create_task(btn_cancel_listen())
 
 
 @disable_buttons("Flashing Lights")

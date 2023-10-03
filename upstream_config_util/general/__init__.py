@@ -6,6 +6,7 @@ from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.layout import TABLE_KEYS
 from upstream_config_util.layout import window, update_prog_bar, TABLE_HEADERS
 from upstream_config_util import tables
+import settings
 
 progress_bar_len = 0
 
@@ -70,4 +71,4 @@ async def update_miners_data(miners: list):
 
 
 async def _get_data(miner):
-    return (await miner.get_data()).asdict()
+    return (await miner.get_data(include=settings.get("include"))).asdict()

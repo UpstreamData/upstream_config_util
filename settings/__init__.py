@@ -24,6 +24,20 @@ _settings = {
     "config_threads": 300,
     "log_to_file": False,
     "debug": False,
+    "include": [
+        "model",
+        "hostname",
+        "hashrate",
+        "boards",
+        "wattage",
+        "wattage_limit",
+        "pool_1_user",
+        "pool_1_url",
+        "pool_2_user",
+        "pool_2_url",
+        "pool_split",
+        "fw_ver",
+    ],
 }
 
 try:
