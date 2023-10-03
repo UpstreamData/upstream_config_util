@@ -3,21 +3,40 @@ import logging
 
 from pyasic.miners.miner_factory import miner_factory
 from pyasic.network import MinerNetwork
+from upstream_config_util import tables
 from upstream_config_util.decorators import disable_buttons
-from upstream_config_util.layout import window, update_prog_bar, TABLE_HEADERS
-from upstream_config_util.tables import clear_tables, TableManager
+from upstream_config_util.general import btn_all, btn_web, btn_refresh
+from upstream_config_util.layout import update_prog_bar, TABLE_HEADERS
+from upstream_config_util.layout import window
+from upstream_config_util.record import record_ui
+from upstream_config_util.tables import TableManager
+from upstream_config_util.tables import clear_tables
+
+TABLE = "scan_table"
 
 
-class Singleton(type):
-    _instances = {}
+async def handle_event(event, value):
+    if event == "scan_all":
+        await btn_all(TABLE, value[TABLE])
+    if event == "scan_web":
+        btn_web(TABLE, value[TABLE])
+    if event == "scan_refresh":
+        asyncio.create_task(btn_refresh(TABLE, value[TABLE]))
+    if event == "btn_scan":
+        asyncio.create_task(btn_scan(value["scan_ip"]))
+    if event == "scan_cancel":
+        asyncio.create_task(scan_cancel())
+    if event == "record":
+        if value[TABLE]:
+            ips = [window[TABLE].Values[row][0] for row in value[TABLE]]
+        else:
+            ips = [
+                window[TABLE].Values[row][0] for row in range(len(window[TABLE].Values))
+            ]
+        asyncio.create_task(record_ui(ips))
 
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
 
-
-class ScanManager(metaclass=Singleton):
+class ScanTabManager:
     def __init__(self):
         self.scan_task = None
 
@@ -30,12 +49,13 @@ class ScanManager(metaclass=Singleton):
     async def cancel(self):
         self.scan_task.cancel()
         window["scan_cancel"].update(visible=False)
+        while not self.scan_task.done():
+            await asyncio.sleep(0.1)
 
 
 progress_bar_len = 0
-
-
 DEFAULT_DATA = set()
+SCAN_TAB_MANAGER = ScanTabManager()
 
 for table in TABLE_HEADERS:
     for header in TABLE_HEADERS[table]:
@@ -43,23 +63,25 @@ for table in TABLE_HEADERS:
 
 
 async def scan_cancel():
-    await ScanManager().cancel()
+    await SCAN_TAB_MANAGER.cancel()
 
 
 async def btn_all():
-    tbl = "scan_table"
-    window[tbl].update(select_rows=([row for row in range(len(window[tbl].Values))]))
+    window[TABLE].update(
+        select_rows=([row for row in range(len(window[TABLE].Values))])
+    )
 
 
-async def btn_scan(scan_ip: str):
-    network = MinerNetwork("192.168.1.0")
-    if scan_ip:
+async def btn_scan(scan_ip: str = None):
+    if scan_ip is not None:
         if "/" in scan_ip:
             ip, mask = scan_ip.split("/")
             network = MinerNetwork(ip, mask=mask)
         else:
             network = MinerNetwork(scan_ip)
-    asyncio.create_task(ScanManager().scan_miners(network))
+    else:
+        network = MinerNetwork("192.168.1.0")
+    asyncio.create_task(SCAN_TAB_MANAGER.scan_miners(network))
 
 
 @disable_buttons("Scanning")
@@ -93,11 +115,8 @@ async def _scan_miners(network: MinerNetwork):
                 miners.sort()
 
                 # generate default data for the table manager
-                _data = {}
-                for key in DEFAULT_DATA:
-                    _data[key] = ""
-                _data["ip"] = str(miner.ip)
-                TableManager().update_item(_data)
+                _data = {"ip": str(miner.ip)}
+                tables.update_item(_data)
 
                 # create a task to get data, and save it to ensure it finishes
                 data_tasks.append(asyncio.create_task(_get_miner_data(miner)))
@@ -121,7 +140,7 @@ async def _scan_miners(network: MinerNetwork):
 async def _get_miner_data(miner):
     global progress_bar_len
 
-    TableManager().update_item(await _get_data(miner))
+    tables.update_item(await _get_data(miner))
 
     progress_bar_len += 1
     await update_prog_bar(progress_bar_len)

@@ -1,11 +1,13 @@
 import PySimpleGUI as sg
 
-from .imgs import WINDOW_ICON
+from .imgs import WINDOW_ICON, TkImages
 
 import asyncio
 
-WINDOW_COLOR = "#F0F0F0"
-GREY = "#d0d0d0"
+WINDOW_COLOR = "#DFDFDF"
+TABLE_BG = "#FFFFFF"
+ACCENT_COLOR = "#04AEFF"
+TABLE_HIGHLIGHT = ("#000000", ACCENT_COLOR)
 TAB_PAD = 0
 BTN_BORDER = 1
 POOLS_TABLE_PAD = 0
@@ -14,10 +16,16 @@ TABLE_HEADER_BORDER = 3
 TABLE_PAD = 0
 SCROLLBAR_WIDTH = 16
 SCROLLBAR_ARROW_WIDTH = 16
-SCROLLBAR_RELIEF = sg.RELIEF_RIDGE
+SCROLLBAR_RELIEF = sg.RELIEF_RAISED
 POOLS_TABLE_BORDER = 1
 POOLS_TABLE_HEADER_BORDER = 3
-sg.theme("SystemDefaultForReal")
+
+THEME = "Default1"
+# print(sg.LOOK_AND_FEEL_TABLE["SystemDefaultForReal"])
+sg.LOOK_AND_FEEL_TABLE[THEME]["BACKGROUND"] = WINDOW_COLOR
+sg.LOOK_AND_FEEL_TABLE[THEME]["PROGRESS_DEPTH"] = 1
+
+sg.theme(THEME)
 
 TABLE_HEADERS = {
     "SCAN": {
@@ -217,6 +225,9 @@ def get_scan_layout():
                 max_col_width=15,
                 justification="center",
                 key="scan_table",
+                background_color=TABLE_BG,
+                selected_row_colors=TABLE_HIGHLIGHT,
+                text_color=TABLE_HIGHLIGHT[0],
                 col_widths=SCAN_COL_WIDTHS,
                 border_width=TABLE_BORDER,
                 header_border_width=TABLE_HEADER_BORDER,
@@ -288,6 +299,9 @@ def get_boards_layout():
                 max_col_width=15,
                 justification="center",
                 key="boards_table",
+                background_color=TABLE_BG,
+                selected_row_colors=TABLE_HIGHLIGHT,
+                text_color=TABLE_HIGHLIGHT[0],
                 col_widths=BOARDS_COL_WIDTHS,
                 border_width=TABLE_BORDER,
                 header_border_width=TABLE_HEADER_BORDER,
@@ -375,6 +389,9 @@ def get_command_layout():
                 max_col_width=15,
                 justification="center",
                 key="cmd_table",
+                background_color=TABLE_BG,
+                selected_row_colors=TABLE_HIGHLIGHT,
+                text_color=TABLE_HIGHLIGHT[0],
                 col_widths=col_widths,
                 border_width=TABLE_BORDER,
                 header_border_width=TABLE_HEADER_BORDER,
@@ -444,6 +461,9 @@ def get_pools_layout():
                                         max_col_width=15,
                                         justification="center",
                                         key="pools_table",
+                                        background_color=TABLE_BG,
+                                        selected_row_colors=TABLE_HIGHLIGHT,
+                                        text_color=TABLE_HIGHLIGHT[0],
                                         border_width=POOLS_TABLE_BORDER,
                                         header_border_width=POOLS_TABLE_HEADER_BORDER,
                                         sbar_width=SCROLLBAR_WIDTH,
@@ -476,6 +496,9 @@ def get_pools_layout():
                                         max_col_width=15,
                                         justification="center",
                                         key="pools_1_table",
+                                        background_color=TABLE_BG,
+                                        selected_row_colors=TABLE_HIGHLIGHT,
+                                        text_color=TABLE_HIGHLIGHT[0],
                                         border_width=POOLS_TABLE_BORDER,
                                         header_border_width=POOLS_TABLE_HEADER_BORDER,
                                         sbar_width=SCROLLBAR_WIDTH,
@@ -507,6 +530,9 @@ def get_pools_layout():
                                         max_col_width=15,
                                         justification="center",
                                         key="pools_2_table",
+                                        background_color=TABLE_BG,
+                                        selected_row_colors=TABLE_HIGHLIGHT,
+                                        text_color=TABLE_HIGHLIGHT[0],
                                         border_width=POOLS_TABLE_BORDER,
                                         header_border_width=POOLS_TABLE_HEADER_BORDER,
                                         sbar_width=SCROLLBAR_WIDTH,
@@ -600,6 +626,9 @@ def get_config_layout():
                 max_col_width=15,
                 justification="center",
                 key="cfg_table",
+                background_color=TABLE_BG,
+                selected_row_colors=TABLE_HIGHLIGHT,
+                text_color=TABLE_HIGHLIGHT[0],
                 header_border_width=TABLE_HEADER_BORDER,
                 border_width=TABLE_BORDER,
                 sbar_width=SCROLLBAR_WIDTH,
@@ -631,7 +660,11 @@ layout = [
     [
         sg.Text("", size=(20, 1), key="status"),
         sg.ProgressBar(
-            max_value=100, size_px=(0, 20), expand_x=True, key="progress_bar"
+            max_value=100,
+            size_px=(0, 20),
+            bar_color=(ACCENT_COLOR, TABLE_BG),
+            expand_x=True,
+            key="progress_bar",
         ),
         sg.Text("", size=(20, 1), key="progress_percent", justification="r"),
     ],

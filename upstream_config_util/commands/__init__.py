@@ -2,7 +2,7 @@ from pyasic.miners.miner_factory import miner_factory
 from pyasic.miners.miner_listener import MinerListener
 from pyasic.miners.makes import WhatsMiner
 from upstream_config_util.layout import window, update_prog_bar, WINDOW_ICON
-from upstream_config_util.tables import TableManager
+from upstream_config_util.tables import TableManager, TABLE_MANAGER
 from upstream_config_util.decorators import disable_buttons
 import settings
 from typing import Tuple
@@ -14,7 +14,6 @@ import asyncio
 
 @disable_buttons("Flashing Lights")
 async def btn_light(ip_idxs: list):
-    table_manager = TableManager()
     _table = window["cmd_table"].Widget
     iids = _table.get_children()
     tasks = []
@@ -22,7 +21,7 @@ async def btn_light(ip_idxs: list):
     for idx in ip_idxs:
         item = _table.item(iids[idx])
         ip = item["values"][0]
-        new_light_val = not table_manager.data[ip]["fault_light"]
+        new_light_val = not TABLE_MANAGER.data[ip]["fault_light"]
         tasks.append(_fault_light(ip, new_light_val))
         vals[ip] = new_light_val
 
@@ -30,18 +29,17 @@ async def btn_light(ip_idxs: list):
         ip, success = await task
         ip = str(ip)
         if success:
-            table_manager.data[ip]["fault_light"] = vals[ip]
-            table_manager.data[ip]["output"] = "Fault Light command succeeded."
+            TABLE_MANAGER.data[ip]["fault_light"] = vals[ip]
+            TABLE_MANAGER.data[ip]["output"] = "Fault Light command succeeded."
         else:
-            table_manager.data[ip]["output"] = "Fault Light command failed."
-        table_manager.update_tables()
+            TABLE_MANAGER.data[ip]["output"] = "Fault Light command failed."
+        TABLE_MANAGER.update_tables()
 
 
 @disable_buttons("Unlocking")
 async def btn_wm_unlock(ip_idxs: list):
     prog_bar_len = 0
     await update_prog_bar(prog_bar_len, len(ip_idxs))
-    table_manager = TableManager()
     _table = window["cmd_table"].Widget
     miners = []
     iids = _table.get_children()
@@ -59,14 +57,14 @@ async def btn_wm_unlock(ip_idxs: list):
         async for done in sent:
             success = done["Status"]
             if success:
-                table_manager.data[str(done["IP"])][
+                TABLE_MANAGER.data[str(done["IP"])][
                     "output"
                 ] = "Unlock command succeeded."
             else:
-                table_manager.data[str(done["IP"])]["output"] = "Unlock command failed."
+                TABLE_MANAGER.data[str(done["IP"])]["output"] = "Unlock command failed."
             p_bar_len += 1
             await update_prog_bar(p_bar_len)
-            table_manager.update_tables()
+            TABLE_MANAGER.update_tables()
     else:
         await update_prog_bar(100, _max=100)
 
@@ -105,7 +103,6 @@ async def _fault_light(ip: str, on: bool) -> Tuple[str, bool]:
 
 @disable_buttons("Rebooting")
 async def btn_reboot(ip_idxs: list):
-    table_manager = TableManager()
     _table = window["cmd_table"].Widget
     iids = _table.get_children()
     miners = []
@@ -124,10 +121,10 @@ async def btn_reboot(ip_idxs: list):
         async for done in sent:
             success = done["Status"]
             if success:
-                table_manager.data[ip]["output"] = "Reboot command succeeded."
+                TABLE_MANAGER.data[ip]["output"] = "Reboot command succeeded."
             else:
-                table_manager.data[ip]["output"] = "Reboot command failed."
-            table_manager.update_tables()
+                TABLE_MANAGER.data[ip]["output"] = "Reboot command failed."
+            TABLE_MANAGER.update_tables()
 
 
 async def reboot_generator(miners: list):
@@ -152,7 +149,6 @@ async def _reboot(miner):
 
 @disable_buttons("Restarting Backend")
 async def btn_backend(ip_idxs: list):
-    table_manager = TableManager()
     _table = window["cmd_table"].Widget
     iids = _table.get_children()
     for idx in ip_idxs:
@@ -161,17 +157,16 @@ async def btn_backend(ip_idxs: list):
         miner = await miner_factory.get_miner(ip)
         success = await miner.restart_backend()
         if success:
-            table_manager.data[ip]["output"] = "Restart Backend command succeeded."
+            TABLE_MANAGER.data[ip]["output"] = "Restart Backend command succeeded."
         else:
-            table_manager.data[ip]["output"] = "Restart Backend command failed."
-    table_manager.update_tables()
+            TABLE_MANAGER.data[ip]["output"] = "Restart Backend command failed."
+    TABLE_MANAGER.update_tables()
 
 
 @disable_buttons("Sending Command")
 async def btn_command(ip_idxs: list, command: str):
     prog_bar_len = 0
     await update_prog_bar(prog_bar_len, len(ip_idxs))
-    table_manager = TableManager()
     _table = window["cmd_table"].Widget
     miners = []
     iids = _table.get_children()
@@ -186,9 +181,9 @@ async def btn_command(ip_idxs: list, command: str):
         success = done["Status"]
         if not isinstance(done["Status"], str):
             success = f"Command {command} failed."
-        table_manager.data[done["IP"]]["output"] = success
+        TABLE_MANAGER.data[done["IP"]]["output"] = success
         prog_bar_len += 1
-        table_manager.update_tables()
+        TABLE_MANAGER.update_tables()
         await update_prog_bar(prog_bar_len, len(ip_idxs))
 
 

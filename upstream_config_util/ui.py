@@ -3,7 +3,7 @@ import asyncio
 import sys
 from upstream_config_util.boards import boards_report
 from upstream_config_util.imgs import TkImages
-from upstream_config_util.scan import btn_scan, scan_cancel
+from upstream_config_util import scan
 from upstream_config_util.commands import (
     btn_light,
     btn_reboot,
@@ -11,7 +11,7 @@ from upstream_config_util.commands import (
     btn_command,
     btn_cancel_listen,
     btn_listen,
-    btn_wm_unlock
+    btn_wm_unlock,
 )
 from upstream_config_util.configure import (
     generate_config_ui,
@@ -21,7 +21,7 @@ from upstream_config_util.configure import (
 from upstream_config_util.record import record_ui
 from upstream_config_util.layout import window, TABLE_KEYS
 from upstream_config_util.general import btn_all, btn_web, btn_refresh
-from upstream_config_util.tables import TableManager
+from upstream_config_util import tables
 import tkinter as tk
 import pyperclip
 
@@ -37,8 +37,7 @@ def _tree_header_click_handler(event, table):
 
         heading = table.Widget.heading(col)["text"]
 
-        mgr = TableManager()
-        mgr.update_sort_key(heading)
+        tables.update_sort_key(heading)
 
 
 def _table_copy(table):
@@ -85,7 +84,7 @@ def bind_ctrl_a(key):
 
 async def ui():
     window.read(1)
-    TableManager().update_tables()
+    tables.update_tables()
 
     for key in [*TABLE_KEYS["table"], *TABLE_KEYS["tree"]]:
         bind_copy(key)
@@ -111,34 +110,34 @@ async def ui():
         if isinstance(event, tuple):
             if event[0].endswith("_table"):
                 if event[2][0] == -1:
-                    mgr = TableManager()
                     table = window[event[0]].Widget
-                    mgr.update_sort_key(table.heading(event[2][1])["text"])
+                    tables.update_sort_key(table.heading(event[2][1])["text"])
 
-        # scan tab
-        if event == "scan_all":
-            _table = "scan_table"
-            btn_all(_table, value[_table])
-        if event == "scan_web":
-            _table = "scan_table"
-            btn_web(_table, value[_table])
-        if event == "scan_refresh":
-            _table = "scan_table"
-            asyncio.create_task(btn_refresh(_table, value[_table]))
-        if event == "btn_scan":
-            asyncio.create_task(btn_scan(value["scan_ip"]))
-        if event == "scan_cancel":
-            await scan_cancel()
-        if event == "record":
-            _table = "scan_table"
-            if value[_table]:
-                ips = [window[_table].Values[row][0] for row in value[_table]]
-            else:
-                ips = [
-                    window[_table].Values[row][0]
-                    for row in range(len(window[_table].Values))
-                ]
-            asyncio.create_task(record_ui(ips))
+        # # scan tab
+        # if event == "scan_all":
+        #     _table = "scan_table"
+        #     btn_all(_table, value[_table])
+        # if event == "scan_web":
+        #     _table = "scan_table"
+        #     btn_web(_table, value[_table])
+        # if event == "scan_refresh":
+        #     _table = "scan_table"
+        #     asyncio.create_task(btn_refresh(_table, value[_table]))
+        # if event == "btn_scan":
+        #     asyncio.create_task(btn_scan(value["scan_ip"]))
+        # if event == "scan_cancel":
+        #     await scan_cancel()
+        # if event == "record":
+        #     _table = "scan_table"
+        #     if value[_table]:
+        #         ips = [window[_table].Values[row][0] for row in value[_table]]
+        #     else:
+        #         ips = [
+        #             window[_table].Values[row][0]
+        #             for row in range(len(window[_table].Values))
+        #         ]
+        #     asyncio.create_task(record_ui(ips))
+        await scan.handle_event(event, value)
 
         # boards tab
         if event == "boards_all":

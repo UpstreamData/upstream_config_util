@@ -5,7 +5,7 @@ from pyasic.miners.miner_factory import miner_factory
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.layout import TABLE_KEYS
 from upstream_config_util.layout import window, update_prog_bar, TABLE_HEADERS
-from upstream_config_util.tables import TableManager
+from upstream_config_util import tables
 
 progress_bar_len = 0
 
@@ -51,15 +51,8 @@ async def btn_refresh(table, selected):
 
 
 async def update_miners_data(miners: list):
-    data = []
-    for miner in miners:
-        _data = {}
-        for key in DEFAULT_DATA:
-            _data[key] = ""
-        _data["ip"] = str(miner)
-        data.append(_data)
-
-    TableManager().update_data(data)
+    tables.clear_tables()
+    tables.update_tables([{"ip": str(miner)} for miner in miners])
 
     global progress_bar_len
     progress_bar_len = 0
@@ -71,7 +64,7 @@ async def update_miners_data(miners: list):
     data_generator = asyncio.as_completed([_get_data(miner) for miner in _miners])
     for all_data in data_generator:
         data = await all_data
-        TableManager().update_item(data)
+        tables.update_item(data)
         progress_bar_len += 1
         await update_prog_bar(progress_bar_len)
 
