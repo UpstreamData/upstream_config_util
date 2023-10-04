@@ -110,6 +110,8 @@ DATA_PARSE_MAP = {
         "parser": lambda x: x["fw_ver"],
         "default": str,
     },
+    "Description": {"default": str},
+    "Code": {"default": int},
 }
 
 
@@ -172,6 +174,7 @@ class TableManager:
             "POOLS_1": [["" for _ in TABLE_HEADERS["POOLS_1"]] for _ in self.data],
             "POOLS_2": [["" for _ in TABLE_HEADERS["POOLS_2"]] for _ in self.data],
             "CONFIG": [["" for _ in TABLE_HEADERS["CONFIG"]] for _ in self.data],
+            "ERRORS": [["" for _ in TABLE_HEADERS["ERRORS"]] for _ in self.data],
         }
 
         ip_sorted_keys = sorted(self.data.keys(), key=lambda x: ipaddress.ip_address(x))
@@ -187,6 +190,7 @@ class TableManager:
             "POOLS_2": "pools_2_table",
             "CONFIG": "cfg_table",
             "CMD": "cmd_table",
+            "ERRORS": "errors_table",
         }
 
         for table in TABLE_HEADERS:
@@ -215,7 +219,9 @@ class TableManager:
 
         for data_idx, ip in enumerate(sorted_keys):
             item = self.data[ip]
-            for table in TABLE_HEADERS:
+            headers = {**TABLE_HEADERS}
+            del headers["ERRORS"]
+            for table in headers:
                 for idx, header in enumerate(TABLE_HEADERS[table]):
                     parse_map = DATA_PARSE_MAP.get(header)
                     if parse_map is None:
@@ -233,12 +239,25 @@ class TableManager:
                         val = f"{val}{parse_map['suffix']}"
                     tables[table][data_idx][idx] = val
 
+        for data_idx, ip in enumerate(sorted_keys):
+            item = self.data[ip]
+            msg_val = []
+            code_val = []
+            for err in item.get("errors", []):
+                msg_val.append(err.get("error_message"))
+                code_val.append(str(err.get("error_code")))
+
+            val = [item["ip"], ", ".join(code_val), " ".join(msg_val)]
+            tables["ERRORS"][data_idx] = val
+
         window["scan_table"].update(tables["SCAN"])
         window["boards_table"].update(tables["BOARDS"])
         window["pools_table"].update(tables["POOLS_ALL"])
         window["pools_1_table"].update(tables["POOLS_1"])
         window["pools_2_table"].update(tables["POOLS_2"])
         window["cfg_table"].update(tables["CONFIG"])
+
+        window["errors_table"].update(tables["ERRORS"])
 
         treedata = sg.TreeData()
         for idx, item in enumerate(tables["CMD"]):

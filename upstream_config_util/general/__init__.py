@@ -38,6 +38,7 @@ def btn_all(table, selected):
 
 
 def btn_web(table, selected):
+    selected = set(selected)
     for row in selected:
         webbrowser.open("http://" + window[table].Values[row][0])
 

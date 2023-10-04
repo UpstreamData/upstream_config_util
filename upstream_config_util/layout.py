@@ -73,6 +73,11 @@ TABLE_HEADERS = {
         "Pool 1 User": "pool_1_user",
         "Power Limit": "wattage_limit",
     },
+    "ERRORS": {
+        "IP": "ip",
+        "Code": "error_code",
+        "Description": "error_desc",
+    },
 }
 
 TABLE_KEYS = {
@@ -656,6 +661,56 @@ def get_config_layout():
     return config_layout
 
 
+def get_errors_layout():
+    ERRORS_COL_WIDTHS = [IP_COL_WIDTH, 15, TABLE_TOTAL_WIDTH - (15 + IP_COL_WIDTH)]
+    errors_layout = [
+        [
+            sg.Button(
+                "ALL",
+                key="errors_all",
+                border_width=BTN_BORDER,
+                pad=((0, 5), (1, 0)),
+            ),
+            sg.Button(
+                "REFRESH DATA",
+                key="errors_refresh",
+                border_width=BTN_BORDER,
+            ),
+            sg.Button(
+                "OPEN IN WEB",
+                key="errors_web",
+                border_width=BTN_BORDER,
+                pad=((5, 5), (3, 2)),
+            ),
+        ],
+        [
+            sg.Table(
+                values=[],
+                headings=[heading for heading in TABLE_HEADERS["ERRORS"]],
+                auto_size_columns=False,
+                max_col_width=15,
+                justification="center",
+                key="errors_table",
+                background_color=TABLE_BG,
+                selected_row_colors=TABLE_HIGHLIGHT,
+                text_color=TABLE_HIGHLIGHT[0],
+                header_border_width=TABLE_HEADER_BORDER,
+                border_width=TABLE_BORDER,
+                sbar_width=SCROLLBAR_WIDTH,
+                sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
+                sbar_relief=SCROLLBAR_RELIEF,
+                col_widths=ERRORS_COL_WIDTHS,
+                size=(0, TABLE_HEIGHT),
+                expand_x=True,
+                expand_y=True,
+                enable_click_events=True,
+                pad=TABLE_PAD,
+            ),
+        ],
+    ]
+    return errors_layout
+
+
 layout = [
     [
         sg.Text("", size=(20, 1), key="status"),
@@ -700,6 +755,13 @@ layout = [
                     sg.Tab(
                         "Boards",
                         get_boards_layout(),
+                        pad=TAB_PAD,
+                    )
+                ],
+                [
+                    sg.Tab(
+                        "Errors",
+                        get_errors_layout(),
                         pad=TAB_PAD,
                     )
                 ],

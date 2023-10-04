@@ -108,6 +108,17 @@ async def ui():
             _table = "pools_table"
             asyncio.create_task(btn_refresh(_table, value[_table]))
 
+        # errors tab
+        if event == "errors_all":
+            _table = "pools_table"
+            btn_all(_table, value[_table])
+        if event == "errors_web":
+            _table = "pools_table"
+            btn_web(_table, value[_table])
+        if event == "errors_refresh":
+            _table = "pools_table"
+            asyncio.create_task(btn_refresh(_table, value[_table]))
+
         if event == "__TIMEOUT__":
             await asyncio.sleep(0.001)
 
