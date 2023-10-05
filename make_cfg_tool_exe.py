@@ -76,7 +76,7 @@ setup(
                 os.path.join(os.getcwd(), "settings/settings.toml"),
                 os.path.join(os.getcwd(), "README.md"),
             ],
-            "packages": PACKAGES
+            "packages": PACKAGES,
         },
     },
     executables=[

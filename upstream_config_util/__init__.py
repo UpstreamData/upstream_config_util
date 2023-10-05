@@ -25,6 +25,7 @@ from .ui import ui
 #         loop.close()
 #         sys.exit()
 
+
 def main():
     from logger import init_logger
 
