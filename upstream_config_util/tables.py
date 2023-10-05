@@ -174,7 +174,7 @@ class TableManager:
             "POOLS_1": [["" for _ in TABLE_HEADERS["POOLS_1"]] for _ in self.data],
             "POOLS_2": [["" for _ in TABLE_HEADERS["POOLS_2"]] for _ in self.data],
             "CONFIG": [["" for _ in TABLE_HEADERS["CONFIG"]] for _ in self.data],
-            "ERRORS": [["" for _ in TABLE_HEADERS["ERRORS"]] for _ in self.data],
+            "ERRORS": [],
         }
 
         ip_sorted_keys = sorted(self.data.keys(), key=lambda x: ipaddress.ip_address(x))
@@ -241,14 +241,13 @@ class TableManager:
 
         for data_idx, ip in enumerate(sorted_keys):
             item = self.data[ip]
-            msg_val = []
-            code_val = []
             for err in item.get("errors", []):
-                msg_val.append(err.get("error_message"))
-                code_val.append(str(err.get("error_code")))
+                print(err, ip)
+                msg_val = err.get("error_message")
+                code_val = str(err.get("error_code"))
 
-            val = [item["ip"], ", ".join(code_val), " ".join(msg_val)]
-            tables["ERRORS"][data_idx] = val
+                val = [item["ip"], code_val, msg_val]
+                tables["ERRORS"].append(val)
 
         window["scan_table"].update(tables["SCAN"])
         window["boards_table"].update(tables["BOARDS"])
