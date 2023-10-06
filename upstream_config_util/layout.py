@@ -14,14 +14,13 @@ POOLS_TABLE_PAD = 0
 TABLE_BORDER = 1
 TABLE_HEADER_BORDER = 3
 TABLE_PAD = 0
-SCROLLBAR_WIDTH = 16
-SCROLLBAR_ARROW_WIDTH = 16
+SCROLLBAR_WIDTH = 20
+SCROLLBAR_ARROW_WIDTH = 20
 SCROLLBAR_RELIEF = sg.RELIEF_RAISED
 POOLS_TABLE_BORDER = 1
 POOLS_TABLE_HEADER_BORDER = 3
 
 THEME = "Default1"
-# print(sg.LOOK_AND_FEEL_TABLE["SystemDefaultForReal"])
 sg.LOOK_AND_FEEL_TABLE[THEME]["BACKGROUND"] = WINDOW_COLOR
 sg.LOOK_AND_FEEL_TABLE[THEME]["PROGRESS_DEPTH"] = 1
 
@@ -621,6 +620,7 @@ def get_config_layout():
                 "Append IP to Username",
                 key="cfg_append_ip",
                 pad=((5, 5), (3, 2)),
+                checkbox_color=TABLE_BG,
             ),
         ],
         [

@@ -7,7 +7,8 @@ from pyasic.miners.miner_factory import miner_factory
 import settings
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.general import update_miners_data, btn_all, btn_web
-from upstream_config_util.layout import window, update_prog_bar
+from upstream_config_util.imgs import WINDOW_ICON
+from upstream_config_util.layout import window, update_prog_bar, TABLE_BG
 
 progress_bar_len = 0
 
@@ -196,7 +197,7 @@ def generate_config(
 
 async def generate_config_ui():
     generate_config_window = sg.Window(
-        "Generate Config", generate_config_layout(), modal=True
+        "Generate Config", generate_config_layout(), modal=True, icon=WINDOW_ICON
     )
     while True:
         event, values = generate_config_window.read()
@@ -273,12 +274,20 @@ def generate_config_layout():
         ],
         [
             sg.Text("Allow Stratum V2?:", size=(19, 1)),
-            sg.Checkbox("", key="generate_config_window_allow_v2", default=True),
+            sg.Checkbox(
+                "",
+                key="generate_config_window_allow_v2",
+                default=True,
+                checkbox_color=TABLE_BG,
+            ),
         ],
         [
             sg.Push(),
             sg.Checkbox(
-                "Advanced Options", enable_events=True, key="show_advanced_options"
+                "Advanced Options",
+                enable_events=True,
+                key="show_advanced_options",
+                checkbox_color=TABLE_BG,
             ),
         ],
         [
@@ -288,7 +297,10 @@ def generate_config_layout():
                         [
                             sg.Text("Autotuning Enabled:", size=(19, 1)),
                             sg.Checkbox(
-                                "", key="autotuning_enabled", enable_events=True
+                                "",
+                                key="autotuning_enabled",
+                                enable_events=True,
+                                checkbox_color=TABLE_BG,
                             ),
                             sg.Text("Power Limit:"),
                             sg.Spin(
@@ -302,7 +314,10 @@ def generate_config_layout():
                         [
                             sg.Text("Manual Fan Control:", size=(19, 1)),
                             sg.Checkbox(
-                                "", key="manual_fan_control", enable_events=True
+                                "",
+                                key="manual_fan_control",
+                                enable_events=True,
+                                checkbox_color=TABLE_BG,
                             ),
                             sg.Text("Speed:"),
                             sg.Spin(
@@ -350,7 +365,12 @@ def generate_config_layout():
                         ],
                         [
                             sg.Text("Dynamic Power Scaling:"),
-                            sg.Checkbox("", key="dps_enabled", enable_events=True),
+                            sg.Checkbox(
+                                "",
+                                key="dps_enabled",
+                                enable_events=True,
+                                checkbox_color=TABLE_BG,
+                            ),
                             sg.Text("Power Step:"),
                             sg.Spin(
                                 [i for i in range(50, 301, 5)],
@@ -375,6 +395,7 @@ def generate_config_layout():
                                 key="dps_shutdown_enabled",
                                 enable_events=True,
                                 disabled=True,
+                                checkbox_color=TABLE_BG,
                             ),
                             sg.Text("Shutdown Duration (H):"),
                             sg.Spin(
