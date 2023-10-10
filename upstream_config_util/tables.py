@@ -46,19 +46,19 @@ DATA_PARSE_MAP = {
         "default": int,
     },
     "Board 1": {
-        "parser": lambda x: x["boards"][0]["chips"],
+        "parser": lambda x: x["hashboards"][0]["chips"],
         "default": int,
     },
     "Board 2": {
-        "parser": lambda x: x["boards"][1]["chips"],
+        "parser": lambda x: x["hashboards"][1]["chips"],
         "default": int,
     },
     "Board 3": {
-        "parser": lambda x: x["boards"][2]["chips"],
+        "parser": lambda x: x["hashboards"][2]["chips"],
         "default": int,
     },
     "Board 4": {
-        "parser": lambda x: x["boards"][3]["chips"],
+        "parser": lambda x: x["hashboards"][3]["chips"],
         "default": int,
     },
     "Total": {
@@ -242,7 +242,6 @@ class TableManager:
         for data_idx, ip in enumerate(sorted_keys):
             item = self.data[ip]
             for err in item.get("errors", []):
-                print(err, ip)
                 msg_val = err.get("error_message")
                 code_val = str(err.get("error_code"))
 
