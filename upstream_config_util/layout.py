@@ -83,6 +83,7 @@ TABLE_KEYS = {
     "table": [
         "scan_table",
         "boards_table",
+        "errors_table",
         "pools_table",
         "pools_1_table",
         "pools_2_table",
