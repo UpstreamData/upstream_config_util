@@ -67,14 +67,18 @@ async def scan_cancel():
 
 
 async def btn_scan(scan_ip: str = None):
-    if scan_ip is not None:
+    if scan_ip is not None and not scan_ip == "":
+        scan_ip = scan_ip.replace(" ", "")
         if "/" in scan_ip:
-            ip, mask = scan_ip.split("/")
-            network = MinerNetwork(ip, mask=mask)
+            network = MinerNetwork.from_subnet(scan_ip)
+        elif "," in scan_ip:
+            network = MinerNetwork.from_list(scan_ip.split(","))
+        elif "-" in scan_ip:
+            network = MinerNetwork.from_address(scan_ip)
         else:
-            network = MinerNetwork(scan_ip)
+            network = MinerNetwork.from_subnet(scan_ip + "/24")
     else:
-        network = MinerNetwork("192.168.1.0")
+        network = MinerNetwork.from_subnet("192.168.1.0/24")
     asyncio.create_task(SCAN_TAB_MANAGER.scan_miners(network))
 
 
