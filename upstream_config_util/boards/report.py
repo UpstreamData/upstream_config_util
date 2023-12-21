@@ -357,7 +357,7 @@ def create_data_table(data):
                 miner["ip"],
                 miner["model"] if miner["model"] is not None else "?",
                 miner["total_chips"] if miner["total_chips"] is not None else 0,
-                miner["ideal_chips"] if miner["ideal_chips"] is not None else 0,
+                miner["expected_chips"] if miner["expected_chips"] is not None else 0,
                 miner_bad_boards,
             ]
         )

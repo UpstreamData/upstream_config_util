@@ -13,4 +13,4 @@ reboot_threads = 300
 config_threads = 300
 log_to_file = false
 debug = false
-include = ["model", "hashrate", "hashboards", "wattage", "wattage_limit", "pools", "errors", "fw_ver", "api_ver"] #, "hostname"]
+include = ["model", "hashrate", "hashboards", "wattage", "wattage_limit", "pools", "errors", "fw_ver", "api_ver", "config"] #, "hostname"]

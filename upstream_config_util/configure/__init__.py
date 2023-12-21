@@ -1,6 +1,7 @@
 import asyncio
 
 import PySimpleGUI as sg
+import yaml
 
 from pyasic.config import MinerConfig
 from pyasic.miners.miner_factory import miner_factory
@@ -46,7 +47,7 @@ async def btn_import(table, selected):
     miner = await miner_factory.get_miner(ip)
     config = await miner.get_config()
     if config:
-        window["cfg_config_txt"].update(config.as_yaml())
+        window["cfg_config_txt"].update(yaml.dump(config.as_dict(), sort_keys=False))
 
 
 @disable_buttons("Configuring")
@@ -79,7 +80,7 @@ async def send_config(ips: list, config: str, last_octet_ip: bool):
 async def send_config_generator(miners: list, config, last_octet_ip_user: bool):
     loop = asyncio.get_event_loop()
     config_tasks = []
-    config = MinerConfig().from_yaml(config)
+    config = MinerConfig.from_dict(yaml.full_load(config))
     for miner in miners:
         if len(config_tasks) >= settings.get("config_threads", 300):
             configured = asyncio.as_completed(config_tasks)
@@ -103,7 +104,6 @@ def generate_config(
     workername: str,
     v2_allowed: bool,
     advanced_cfg: bool,
-    autotuning_enabled: bool,
     autotuning_wattage: int,
     manual_fan_control: bool,
     manual_fan_speed: int,
@@ -134,65 +134,80 @@ def generate_config(
         url_3 = "stratum+tcp://stratum.braiins.com:3333"
     if not advanced_cfg:
         config = {
-            "group": [
-                {
-                    "name": "group",
-                    "quota": 1,
-                    "pool": [
-                        {"url": url_1, "user": user, "password": "123"},
-                        {"url": url_2, "user": user, "password": "123"},
-                        {"url": url_3, "user": user, "password": "123"},
-                    ],
-                }
-            ],
-            "temp_control": {
-                "target_temp": 80.0,
-                "hot_temp": 90.0,
-                "dangerous_temp": 120.0,
+            "pools": {
+                "groups": [
+                    {
+                        "name": "group",
+                        "quota": 1,
+                        "pool": [
+                            {"url": url_1, "user": user, "password": "123"},
+                            {"url": url_2, "user": user, "password": "123"},
+                            {"url": url_3, "user": user, "password": "123"},
+                        ],
+                    }
+                ]
             },
-            "autotuning": {"enabled": True, "psu_power_limit": 900},
+            "temperature": {
+                "target": 80.0,
+                "hot": 90.0,
+                "danger": 120.0,
+            },
+            "mining_mode": {
+                "mode": "power_tuning",
+                "power": 1000,
+            },
         }
     else:
         config = {
-            "group": [
-                {
-                    "name": "group",
-                    "quota": 1,
-                    "pool": [
-                        {"url": url_1, "user": user, "password": "123"},
-                        {"url": url_2, "user": user, "password": "123"},
-                        {"url": url_3, "user": user, "password": "123"},
-                    ],
-                }
-            ],
-            "temp_control": {
-                "mode": "auto",
-                "target_temp": float(target_temp),
-                "hot_temp": float(hot_temp),
-                "dangerous_temp": float(dangerous_temp),
+            "pools": {
+                "groups": [
+                    {
+                        "name": "group",
+                        "quota": 1,
+                        "pool": [
+                            {"url": url_1, "user": user, "password": "123"},
+                            {"url": url_2, "user": user, "password": "123"},
+                            {"url": url_3, "user": user, "password": "123"},
+                        ],
+                    }
+                ]
             },
-            "autotuning": {
-                "enabled": autotuning_enabled,
-                "psu_power_limit": autotuning_wattage,
+            "temperature": {
+                "target": float(target_temp),
+                "hot": float(hot_temp),
+                "danger": float(dangerous_temp),
+            },
+            "mining_mode": {
+                "mode": "power_tuning",
+                "power": autotuning_wattage,
             },
         }
         if manual_fan_control:
-            config["temp_control"]["mode"] = "manual"
-            config["fan_control"] = {}
-            config["fan_control"]["speed"] = manual_fan_speed
-            config["fan_control"]["min_fans"] = min_fans
+            config["fan_mode"] = {
+                "mode": "manual",
+                "minimum_fans": min_fans,
+                "speed": manual_fan_speed,
+            }
         if dps_enabled:
             config["power_scaling"] = {
-                "enabled": dps_enabled,
+                "mode": "enabled" if dps_enabled else "disabled",
                 "power_step": dps_power_step,
-                "min_psu_power_limit": dps_min_power,
-                "shutdown_enabled": dps_shutdown_enabled,
-                "shutdown_duration": dps_shutdown_duration,
+                "minimum_power": dps_min_power,
             }
+            if dps_shutdown_enabled:
+                config["power_scaling"]["shutdown_enabled"] = {
+                    "mode": "enabled",
+                    "duration": dps_shutdown_duration,
+                }
+            else:
+                config["power_scaling"]["shutdown_enabled"] = {
+                    "mode": "disabled",
+                    "duration": dps_shutdown_duration,
+                }
 
-    cfg = MinerConfig().from_raw(config)
+    cfg = MinerConfig()
 
-    window["cfg_config_txt"].update(cfg.as_yaml())
+    window["cfg_config_txt"].update(yaml.dump(cfg.as_dict(), sort_keys=False))
 
 
 async def generate_config_ui():
@@ -210,7 +225,6 @@ async def generate_config_ui():
                     values["generate_config_window_workername"],
                     values["generate_config_window_allow_v2"],
                     values["show_advanced_options"],
-                    values["autotuning_enabled"],
                     values["autotuning_wattage"],
                     values["manual_fan_control"],
                     values["manual_fan_speed"],
@@ -296,12 +310,6 @@ def generate_config_layout():
                     [
                         [
                             sg.Text("Autotuning Enabled:", size=(19, 1)),
-                            sg.Checkbox(
-                                "",
-                                key="autotuning_enabled",
-                                enable_events=True,
-                                checkbox_color=TABLE_BG,
-                            ),
                             sg.Text("Power Limit:"),
                             sg.Spin(
                                 [i for i in range(100, 5001, 100)],

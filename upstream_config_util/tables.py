@@ -42,7 +42,7 @@ DATA_PARSE_MAP = {
         "default": int,
     },
     "Ideal": {
-        "parser": lambda x: x["ideal_chips"],
+        "parser": lambda x: x["expected_chips"],
         "default": int,
     },
     "Board 1": {
@@ -69,28 +69,36 @@ DATA_PARSE_MAP = {
         "parser": lambda x: x["nominal"],
         "default": int,
     },
-    "Split": {
-        "parser": lambda x: x["pool_split"],
+    "Quota": {
+        "parser": lambda x: x["config"]["pools"]["groups"][0]["quota"],
         "default": str,
     },
     "Pool 1": {
-        "parser": lambda x: x["pool_1_url"],
+        "parser": lambda x: x["config"]["pools"]["groups"][0]["pools"][0]["url"],
         "default": str,
     },
     "Pool 1 User": {
-        "parser": lambda x: x["pool_1_user"],
+        "parser": lambda x: x["config"]["pools"]["groups"][0]["pools"][0]["user"],
         "default": str,
     },
     "Pool 2": {
-        "parser": lambda x: x["pool_2_url"],
+        "parser": lambda x: x["config"]["pools"]["groups"][0]["pools"][1]["url"],
         "default": str,
     },
     "Pool 2 User": {
-        "parser": lambda x: x["pool_2_user"],
+        "parser": lambda x: x["config"]["pools"]["groups"][0]["pools"][1]["user"],
+        "default": str,
+    },
+    "Pool 3": {
+        "parser": lambda x: x["config"]["pools"]["groups"][0]["pools"][2]["url"],
+        "default": str,
+    },
+    "Pool 3 User": {
+        "parser": lambda x: x["config"]["pools"]["groups"][0]["pools"][2]["user"],
         "default": str,
     },
     "Chip %": {
-        "parser": lambda x: x["percent_ideal_chips"],
+        "parser": lambda x: x["percent_expected_chips"],
         "default": int,
         "suffix": "%",
     },
@@ -173,6 +181,7 @@ class TableManager:
             "POOLS_ALL": [["" for _ in TABLE_HEADERS["POOLS_ALL"]] for _ in self.data],
             "POOLS_1": [["" for _ in TABLE_HEADERS["POOLS_1"]] for _ in self.data],
             "POOLS_2": [["" for _ in TABLE_HEADERS["POOLS_2"]] for _ in self.data],
+            "POOLS_3": [["" for _ in TABLE_HEADERS["POOLS_3"]] for _ in self.data],
             "CONFIG": [["" for _ in TABLE_HEADERS["CONFIG"]] for _ in self.data],
             "ERRORS": [],
         }
@@ -188,6 +197,7 @@ class TableManager:
             "POOLS_ALL": "pools_table",
             "POOLS_1": "pools_1_table",
             "POOLS_2": "pools_2_table",
+            "POOLS_3": "pools_3_table",
             "CONFIG": "cfg_table",
             "CMD": "cmd_table",
             "ERRORS": "errors_table",
@@ -228,7 +238,7 @@ class TableManager:
                         continue
                     try:
                         val = parse_map["parser"](item)
-                    except LookupError:
+                    except (LookupError, TypeError):
                         continue
                     if val is None:
                         val = parse_map["default"]()
@@ -253,6 +263,7 @@ class TableManager:
         window["pools_table"].update(tables["POOLS_ALL"])
         window["pools_1_table"].update(tables["POOLS_1"])
         window["pools_2_table"].update(tables["POOLS_2"])
+        window["pools_3_table"].update(tables["POOLS_3"])
         window["cfg_table"].update(tables["CONFIG"])
 
         window["errors_table"].update(tables["ERRORS"])

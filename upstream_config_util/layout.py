@@ -39,9 +39,9 @@ TABLE_HEADERS = {
     "BOARDS": {
         "IP": "ip",
         "Model": "model",
-        "Ideal": "ideal_chips",
+        "Ideal": "expected_chips",
         "Total": "total_chips",
-        "Chip %": "percent_ideal_chips",
+        "Chip %": "percent_expected_chips",
         "Board 1": "board_1_chips",
         "Board 2": "board_2_chips",
         "Board 3": "board_3_chips",
@@ -50,21 +50,28 @@ TABLE_HEADERS = {
     "CMD": {"IP": "ip", "Model": "model", "Version": "fw_ver", "Output": "output"},
     "POOLS_ALL": {
         "IP": "ip",
-        "Split": "pool_split",
+        "Quota": "pool_split",
         "Pool 1 User": "pool_1_user",
         "Pool 2 User": "pool_2_user",
+        "Pool 3 User": "pool_3_user",
     },
     "POOLS_1": {
         "IP": "ip",
-        "Split": "pool_split",
+        "Quota": "pool_split",
         "Pool 1": "pool_1_url",
         "Pool 1 User": "pool_1_user",
     },
     "POOLS_2": {
         "IP": "ip",
-        "Split": "pool_split",
+        "Quota": "pool_split",
         "Pool 2": "pool_2_url",
         "Pool 2 User": "pool_2_user",
+    },
+    "POOLS_3": {
+        "IP": "ip",
+        "Quota": "pool_split",
+        "Pool 3": "pool_3_url",
+        "Pool 3 User": "pool_3_user",
     },
     "CONFIG": {
         "IP": "ip",
@@ -139,7 +146,7 @@ USER_COL_WIDTH = 33
 WATTAGE_COL_WIDTH = 10
 SPLIT_COL_WIDTH = 8
 TOTAL_CHIP_WIDTH = 9
-IDEAL_CHIP_WIDTH = 9
+expected_CHIP_WIDTH = 9
 CHIP_PERCENT_WIDTH = 10
 POWER_LIMIT_WIDTH = 12
 SCAN_COL_WIDTHS = [
@@ -255,7 +262,7 @@ def get_boards_layout():
         IP_COL_WIDTH,
         MODEL_COL_WIDTH,
         TOTAL_CHIP_WIDTH,
-        IDEAL_CHIP_WIDTH,
+        expected_CHIP_WIDTH,
         CHIP_PERCENT_WIDTH,
     ]
     add_length = TABLE_TOTAL_WIDTH - sum(BOARDS_COL_WIDTHS)
@@ -416,10 +423,11 @@ def get_command_layout():
 
 
 def get_pools_layout():
-    pool_col_width = int((TABLE_TOTAL_WIDTH - (IP_COL_WIDTH + SPLIT_COL_WIDTH)) / 2)
+    pool_col_width = int((TABLE_TOTAL_WIDTH - (IP_COL_WIDTH + SPLIT_COL_WIDTH)) / 3)
     col_widths = [
         IP_COL_WIDTH,
         SPLIT_COL_WIDTH,
+        pool_col_width,
         pool_col_width,
         pool_col_width,
     ]
@@ -535,6 +543,40 @@ def get_pools_layout():
                                         max_col_width=15,
                                         justification="center",
                                         key="pools_2_table",
+                                        background_color=TABLE_BG,
+                                        selected_row_colors=TABLE_HIGHLIGHT,
+                                        text_color=TABLE_HIGHLIGHT[0],
+                                        border_width=POOLS_TABLE_BORDER,
+                                        header_border_width=POOLS_TABLE_HEADER_BORDER,
+                                        sbar_width=SCROLLBAR_WIDTH,
+                                        sbar_arrow_width=SCROLLBAR_ARROW_WIDTH,
+                                        sbar_relief=SCROLLBAR_RELIEF,
+                                        col_widths=col_widths,
+                                        size=(0, TABLE_HEIGHT),
+                                        expand_x=True,
+                                        expand_y=True,
+                                        enable_click_events=True,
+                                        pad=POOLS_TABLE_PAD,
+                                    )
+                                ]
+                            ],
+                        )
+                    ],
+                    [
+                        sg.Tab(
+                            "Pool 3",
+                            [
+                                [
+                                    sg.Table(
+                                        values=[],
+                                        headings=[
+                                            heading
+                                            for heading in TABLE_HEADERS["POOLS_3"]
+                                        ],
+                                        auto_size_columns=False,
+                                        max_col_width=15,
+                                        justification="center",
+                                        key="pools_3_table",
                                         background_color=TABLE_BG,
                                         selected_row_colors=TABLE_HIGHLIGHT,
                                         text_color=TABLE_HIGHLIGHT[0],
