@@ -6,9 +6,9 @@ authors = ["UpstreamData <brett@upstreamdata.ca>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 PySimpleGUI = "^4.60.5"
-matplotlib = "^3.7.1"
+matplotlib = "^3.8.2"
 reportlab = "^3.6.13"
 svglib = "^1.5.1"
 pyasic = "*"
