@@ -4,6 +4,7 @@ from upstream_config_util.layout import (
     TABLE_KEYS,
     TABLE_HEADERS,
     window,
+    WATTAGE_TOTAL_BUTTONS,
 )
 from upstream_config_util.imgs import LIGHT, FAULT_LIGHT
 import PySimpleGUI as sg
@@ -128,13 +129,19 @@ def update_miner_count(count):
         window[button].update(f"Miners: {count}")
 
 
-def update_total_hr(hashrate: float):
-    if hashrate > 999:
-        hashrate = f"{round(hashrate/1000, 2)} PH/s"
+def update_total_hr(hashrate: float, expected_hashrate: float):
+    if expected_hashrate > 999:
+        hashrate = f"{round(hashrate/1000, 2)}/{round(expected_hashrate/1000, 2)} PH/s"
     else:
-        hashrate = f"{round(hashrate)} TH/s"
+        hashrate = f"{round(hashrate)}/{round(expected_hashrate)} TH/s"
     for button in HASHRATE_TOTAL_BUTTONS:
         window[button].update(f"Hashrate: {hashrate}")
+
+
+def update_total_wattage(wattage: float, expected_wattage: float):
+    wattage = f"{round(wattage)}/{round(expected_wattage)} W"
+    for button in WATTAGE_TOTAL_BUTTONS:
+        window[button].update(f"Wattage: {wattage}")
 
 
 class TableManager:
@@ -281,12 +288,28 @@ class TableManager:
 
         update_miner_count(len(self.data))
         total_hr = 0
+        total_expected_hr = 0
+        total_wattage = 0
+        total_expected_wattage = 0
         for key in self.data.keys():
             hashrate = 0
+            expected_hashrate = 0
+            wattage = 0
+            expected_wattage = 0
             if self.data[key].get("hashrate") is not None:
                 hashrate = self.data[key]["hashrate"]
+            if self.data[key].get("expected_hashrate") is not None:
+                expected_hashrate = self.data[key]["expected_hashrate"]
+            if self.data[key].get("wattage") is not None:
+                wattage = self.data[key]["wattage"]
+            if self.data[key].get("wattage_limit") is not None:
+                expected_wattage = self.data[key]["wattage_limit"]
             total_hr += float(hashrate)
-        update_total_hr(round(total_hr))
+            total_expected_hr += float(expected_hashrate)
+            total_wattage += float(wattage)
+            total_expected_wattage += float(expected_wattage)
+        update_total_hr(round(total_hr), round(total_expected_hr))
+        update_total_wattage(round(total_wattage), round(total_expected_wattage))
 
     def _get_sort(self, data_key: str):
         try:
@@ -310,7 +333,8 @@ class TableManager:
 
     def clear_tables(self):
         self.data = {}
-        window["total_hashrate"].update("Hashrate: 0 TH/s")
+        window["total_hashrate"].update("Hashrate: 0/0 TH/s")
+        window["total_wattage"].update("Wattage: 0/0 W")
         window["miner_count"].update("Miners: 0")
         for table in TABLE_KEYS["table"]:
             window[table].update([])

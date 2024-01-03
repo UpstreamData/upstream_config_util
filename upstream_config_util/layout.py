@@ -107,6 +107,10 @@ HASHRATE_TOTAL_BUTTONS = [
     "total_hashrate",
 ]
 
+WATTAGE_TOTAL_BUTTONS = [
+    "total_wattage",
+]
+
 BUTTON_KEYS = [
     "btn_scan",
     "btn_cmd",
@@ -769,11 +773,18 @@ layout = [
     [
         sg.Push(),
         sg.Button(
-            "Hashrate: 0 TH/s",
+            "Hashrate: 0/0 TH/s",
             disabled=True,
             button_color=("black", "white smoke"),
             disabled_button_color=("black", "white smoke"),
             key="total_hashrate",
+        ),
+        sg.Button(
+            "Wattage: 0/0 W",
+            disabled=True,
+            button_color=("black", "white smoke"),
+            disabled_button_color=("black", "white smoke"),
+            key="total_wattage",
         ),
         sg.Button(
             "Miners: 0",
