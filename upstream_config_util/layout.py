@@ -110,6 +110,17 @@ HASHRATE_TOTAL_BUTTONS = [
 WATTAGE_TOTAL_BUTTONS = [
     "total_wattage",
 ]
+MINER_SELECTED_BUTTONS = [
+    "selected_count",
+]
+
+HASHRATE_SELECTED_BUTTONS = [
+    "selected_hashrate",
+]
+
+WATTAGE_SELECTED_BUTTONS = [
+    "selected_wattage",
+]
 
 BUTTON_KEYS = [
     "btn_scan",
@@ -773,25 +784,50 @@ layout = [
     [
         sg.Push(),
         sg.Button(
-            "Hashrate: 0/0 TH/s",
+            "Total HR: 0/0 TH/s",
             disabled=True,
             button_color=("black", "white smoke"),
             disabled_button_color=("black", "white smoke"),
             key="total_hashrate",
         ),
         sg.Button(
-            "Wattage: 0/0 W",
+            "Total W: 0/0 W",
             disabled=True,
             button_color=("black", "white smoke"),
             disabled_button_color=("black", "white smoke"),
             key="total_wattage",
         ),
         sg.Button(
-            "Miners: 0",
+            "Total Miners: 0",
             disabled=True,
             button_color=("black", "white smoke"),
             disabled_button_color=("black", "white smoke"),
             key="miner_count",
+        ),
+        sg.Push(),
+    ],
+    [
+        sg.Push(),
+        sg.Button(
+            "Selected HR: 0/0 TH/s",
+            disabled=True,
+            button_color=("black", ACCENT_COLOR),
+            disabled_button_color=("black", ACCENT_COLOR),
+            key="selected_hashrate",
+        ),
+        sg.Button(
+            "Selected W: 0/0 W",
+            disabled=True,
+            button_color=("black", ACCENT_COLOR),
+            disabled_button_color=("black", ACCENT_COLOR),
+            key="selected_wattage",
+        ),
+        sg.Button(
+            "Selected Miners: 0",
+            disabled=True,
+            button_color=("black", ACCENT_COLOR),
+            disabled_button_color=("black", ACCENT_COLOR),
+            key="selected_count",
         ),
         sg.Push(),
     ],

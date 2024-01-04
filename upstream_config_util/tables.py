@@ -5,6 +5,9 @@ from upstream_config_util.layout import (
     TABLE_HEADERS,
     window,
     WATTAGE_TOTAL_BUTTONS,
+    MINER_SELECTED_BUTTONS,
+    HASHRATE_SELECTED_BUTTONS,
+    WATTAGE_SELECTED_BUTTONS,
 )
 from upstream_config_util.imgs import LIGHT, FAULT_LIGHT
 import PySimpleGUI as sg
@@ -126,7 +129,7 @@ DATA_PARSE_MAP = {
 
 def update_miner_count(count):
     for button in MINER_COUNT_BUTTONS:
-        window[button].update(f"Miners: {count}")
+        window[button].update(f"Total Miners: {count}")
 
 
 def update_total_hr(hashrate: float, expected_hashrate: float):
@@ -135,13 +138,33 @@ def update_total_hr(hashrate: float, expected_hashrate: float):
     else:
         hashrate = f"{round(hashrate)}/{round(expected_hashrate)} TH/s"
     for button in HASHRATE_TOTAL_BUTTONS:
-        window[button].update(f"Hashrate: {hashrate}")
+        window[button].update(f"Total HR: {hashrate}")
 
 
 def update_total_wattage(wattage: float, expected_wattage: float):
     wattage = f"{round(wattage)}/{round(expected_wattage)} W"
     for button in WATTAGE_TOTAL_BUTTONS:
-        window[button].update(f"Wattage: {wattage}")
+        window[button].update(f"Total W: {wattage}")
+
+
+def update_selected_miner_count(count):
+    for button in MINER_SELECTED_BUTTONS:
+        window[button].update(f"Selected Miners: {count}")
+
+
+def update_selected_total_hr(hashrate: float, expected_hashrate: float):
+    if expected_hashrate > 999:
+        hashrate = f"{round(hashrate/1000, 2)}/{round(expected_hashrate/1000, 2)} PH/s"
+    else:
+        hashrate = f"{round(hashrate)}/{round(expected_hashrate)} TH/s"
+    for button in HASHRATE_SELECTED_BUTTONS:
+        window[button].update(f"Selected HR: {hashrate}")
+
+
+def update_selected_total_wattage(wattage: float, expected_wattage: float):
+    wattage = f"{round(wattage)}/{round(expected_wattage)} W"
+    for button in WATTAGE_SELECTED_BUTTONS:
+        window[button].update(f"Selected W: {wattage}")
 
 
 class TableManager:
@@ -333,14 +356,38 @@ class TableManager:
 
     def clear_tables(self):
         self.data = {}
-        window["total_hashrate"].update("Hashrate: 0/0 TH/s")
-        window["total_wattage"].update("Wattage: 0/0 W")
-        window["miner_count"].update("Miners: 0")
+        window["total_hashrate"].update("Total HR: 0/0 TH/s")
+        window["total_wattage"].update("Total W: 0/0 W")
+        window["miner_count"].update("Total Miners: 0")
         for table in TABLE_KEYS["table"]:
             window[table].update([])
         for tree in TABLE_KEYS["tree"]:
             window[tree].update(sg.TreeData())
         update_miner_count(0)
+
+    def update_sums(self, table: str, values: list):
+        ips = []
+        for value in values:
+            try:
+                if table == "cmd_table":
+                    ips.append(window[table].TreeData.tree_dict[value].values[0])
+                else:
+                    ips.append(window[table].Values[value][0])
+            except LookupError:
+                pass
+
+        total_wattage = sum([self.data[ip]["wattage"] for ip in ips])
+        total_wattage_limit = sum([self.data[ip]["wattage_limit"] for ip in ips])
+        update_selected_total_wattage(total_wattage, total_wattage_limit)
+
+        total_hashrate = sum([self.data[ip]["hashrate"] for ip in ips])
+        total_expected_hashrate = sum(
+            [self.data[ip]["expected_hashrate"] for ip in ips]
+        )
+        update_selected_total_hr(total_hashrate, total_expected_hashrate)
+
+        selected_miners = len(ips)
+        update_selected_miner_count(selected_miners)
 
 
 TABLE_MANAGER = TableManager()
@@ -360,3 +407,7 @@ def clear_tables():
 
 def update_sort_key(sort_key: str):
     TABLE_MANAGER.update_sort_key(sort_key)
+
+
+def update_selected_miners_total(table: str, values: list):
+    TABLE_MANAGER.update_sums(table, values)

@@ -10,6 +10,7 @@ from upstream_config_util import tables
 from upstream_config_util.general import btn_all, btn_web, btn_refresh
 from upstream_config_util.imgs import TkImages
 from upstream_config_util.layout import window, TABLE_KEYS
+from upstream_config_util.tables import update_selected_miners_total
 
 
 def _tree_header_click_handler(event, table):
@@ -118,6 +119,12 @@ async def ui():
         if event == "errors_refresh":
             _table = "pools_table"
             asyncio.create_task(btn_refresh(_table, value[_table]))
+
+        if "+CLICKED+" in event:
+            if "_table" in event[0]:
+                update_selected_miners_total(event[0], value[event[0]])
+        elif event == "cmd_table":
+            update_selected_miners_total(event, value[event])
 
         if event == "__TIMEOUT__":
             await asyncio.sleep(0.001)
