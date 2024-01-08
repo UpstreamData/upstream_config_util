@@ -123,7 +123,9 @@ DATA_PARSE_MAP = {
         "default": str,
     },
     "Description": {"default": str},
-    "Code": {"default": int},
+    "Code": {
+        "default": int,
+    },
 }
 
 
@@ -339,6 +341,8 @@ class TableManager:
             value = DATA_PARSE_MAP[self.sort_key]["parser"](self.data[data_key])
         except LookupError:
             value = DATA_PARSE_MAP[self.sort_key]["default"]()
+        if value is None:
+            value = DATA_PARSE_MAP[self.sort_key]["default"]()
 
         if DATA_PARSE_MAP[self.sort_key].get("suffix") is not None:
             try:
@@ -366,23 +370,48 @@ class TableManager:
         update_miner_count(0)
 
     def update_sums(self, table: str, values: list):
-        ips = []
+        ips = set()
         for value in values:
             try:
                 if table == "cmd_table":
-                    ips.append(window[table].TreeData.tree_dict[value].values[0])
+                    ips.add(window[table].TreeData.tree_dict[value].values[0])
                 else:
-                    ips.append(window[table].Values[value][0])
+                    ips.add(window[table].Values[value][0])
             except LookupError:
                 pass
-
-        total_wattage = sum([self.data[ip]["wattage"] for ip in ips])
-        total_wattage_limit = sum([self.data[ip]["wattage_limit"] for ip in ips])
+        total_wattage = sum(
+            [
+                self.data[ip].get("wattage")
+                if self.data[ip].get("wattage") is not None
+                else 0
+                for ip in ips
+            ]
+        )
+        total_wattage_limit = sum(
+            [
+                self.data[ip].get("wattage_limit")
+                if self.data[ip].get("wattage_limit") is not None
+                else 0
+                for ip in ips
+            ]
+        )
         update_selected_total_wattage(total_wattage, total_wattage_limit)
 
-        total_hashrate = sum([self.data[ip]["hashrate"] for ip in ips])
+        total_hashrate = sum(
+            [
+                self.data[ip].get("hashrate")
+                if self.data[ip].get("hashrate") is not None
+                else 0
+                for ip in ips
+            ]
+        )
         total_expected_hashrate = sum(
-            [self.data[ip]["expected_hashrate"] for ip in ips]
+            [
+                self.data[ip].get("expected_hashrate")
+                if self.data[ip].get("expected_hashrate") is not None
+                else 0
+                for ip in ips
+            ]
         )
         update_selected_total_hr(total_hashrate, total_expected_hashrate)
 
