@@ -339,7 +339,7 @@ class TableManager:
     def _get_sort(self, data_key: str):
         try:
             value = DATA_PARSE_MAP[self.sort_key]["parser"](self.data[data_key])
-        except LookupError:
+        except (LookupError, TypeError):
             value = DATA_PARSE_MAP[self.sort_key]["default"]()
         if value is None:
             value = DATA_PARSE_MAP[self.sort_key]["default"]()
