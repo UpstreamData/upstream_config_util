@@ -22,10 +22,6 @@ async def handle_event(event, value):
         _table = "cmd_table"
         _ips = value[_table]
         asyncio.create_task(btn_light(_ips))
-    if event == "cmd_wm_unlock":
-        _table = "cmd_table"
-        _ips = value[_table]
-        asyncio.create_task(btn_wm_unlock(_ips))
     if event == "cmd_reboot":
         _table = "cmd_table"
         _ips = value[_table]
@@ -67,62 +63,6 @@ async def btn_light(ip_idxs: list):
         else:
             TABLE_MANAGER.data[ip]["output"] = "Fault Light command failed."
         TABLE_MANAGER.update_tables()
-
-
-@disable_buttons("Unlocking")
-async def btn_wm_unlock(ip_idxs: list):
-    prog_bar_len = 0
-    await update_prog_bar(prog_bar_len, len(ip_idxs))
-    _table = window["cmd_table"].Widget
-    miners = []
-    iids = _table.get_children()
-    for idx in ip_idxs:
-        item = _table.item(iids[idx])
-        ip = item["values"][0]
-        miner = await miner_factory.get_miner(ip)
-        if isinstance(miner, WhatsMiner):
-            miners.append(miner)
-
-    if miners:
-        p_bar_len = 0
-        await update_prog_bar(0, _max=(len(miners)))
-        sent = wm_unlock_generator(miners)
-        async for done in sent:
-            success = done["Status"]
-            if success:
-                TABLE_MANAGER.data[str(done["IP"])][
-                    "output"
-                ] = "Unlock command succeeded."
-            else:
-                TABLE_MANAGER.data[str(done["IP"])]["output"] = "Unlock command failed."
-            p_bar_len += 1
-            await update_prog_bar(p_bar_len)
-            TABLE_MANAGER.update_tables()
-    else:
-        await update_prog_bar(100, _max=100)
-
-
-async def wm_unlock_generator(miners: list):
-    loop = asyncio.get_event_loop()
-    unlock_tasks = []
-    for miner in miners:
-        if len(unlock_tasks) >= settings.get("config_threads", 300):
-            cmd_sent = asyncio.as_completed(unlock_tasks)
-            unlock_tasks = []
-            for done in cmd_sent:
-                yield await done
-        unlock_tasks.append(loop.create_task(_wm_unlock(miner)))
-    cmd_sent = asyncio.as_completed(unlock_tasks)
-    for done in cmd_sent:
-        yield await done
-
-
-async def _wm_unlock(miner):
-    try:
-        proc = await miner._reset_api_pwd_to_admin("root")
-        return {"IP": miner.ip, "Status": proc}
-    except:
-        return {"IP": miner.ip, "Status": False}
 
 
 async def _fault_light(ip: str, on: bool) -> Tuple[str, bool]:

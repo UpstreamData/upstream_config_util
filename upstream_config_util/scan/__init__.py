@@ -1,7 +1,6 @@
 import asyncio
 import logging
 
-from pyasic.miners.miner_factory import miner_factory
 from pyasic.network import MinerNetwork
 from upstream_config_util import tables
 from upstream_config_util.decorators import disable_buttons
@@ -87,9 +86,6 @@ async def _scan_miners(network: MinerNetwork):
     """Scan the given network for miners, get data, and fill in the table."""
     # clear the tables on the config tool to prepare for new miners
     clear_tables()
-
-    # clear miner factory cache to make sure we are getting correct miners
-    miner_factory.clear_cached_miners()
 
     # create async generator to scan network for miners
     scan_generator = network.scan_network_generator()

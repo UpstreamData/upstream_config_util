@@ -1,3 +1,5 @@
+from PySimpleGUI import Tree
+
 from upstream_config_util.layout import (
     MINER_COUNT_BUTTONS,
     HASHRATE_TOTAL_BUTTONS,
@@ -174,6 +176,8 @@ class TableManager:
         self.data = {}
         self.sort_key = "IP"
         self.sort_reverse = False
+        self.selected_rows = []
+        self.tree_updated = False
 
     def update_data(self, data: list):
         if not data:
@@ -418,6 +422,23 @@ class TableManager:
         selected_miners = len(ips)
         update_selected_miner_count(selected_miners)
 
+    def update_selected(self, values: list):
+        if self.tree_updated:
+            self.tree_updated = False
+            return
+        if self.selected_rows == values:
+            values = []
+        for table_key in TABLE_KEYS["table"]:
+            if table_key == "errors_table":
+                continue
+            table = window[table_key]
+            table.Update(select_rows=values)
+        for table_key in TABLE_KEYS["tree"]:
+            table = window[table_key]
+            table.TKTreeview.selection_set([table.KeyToID[x] for x in values])
+            self.tree_updated = True
+        self.selected_rows = values
+
 
 TABLE_MANAGER = TableManager()
 
@@ -440,3 +461,7 @@ def update_sort_key(sort_key: str):
 
 def update_selected_miners_total(table: str, values: list):
     TABLE_MANAGER.update_sums(table, values)
+
+
+def update_all_tables_selected(values: list):
+    TABLE_MANAGER.update_selected(values)

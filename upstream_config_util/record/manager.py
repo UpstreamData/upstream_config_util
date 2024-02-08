@@ -2,7 +2,7 @@ import asyncio
 
 from upstream_config_util.record.pdf import generate_pdf
 
-from pyasic.miners.miner_factory import miner_factory
+from pyasic.miners.factory import miner_factory
 
 from typing import List, Dict
 

@@ -4,7 +4,7 @@ import PySimpleGUI as sg
 import yaml
 
 from pyasic.config import MinerConfig
-from pyasic.miners.miner_factory import miner_factory
+from pyasic.miners.factory import miner_factory
 import settings
 from upstream_config_util.decorators import disable_buttons
 from upstream_config_util.general import update_miners_data, btn_all, btn_web
@@ -205,7 +205,7 @@ def generate_config(
                     "duration": dps_shutdown_duration,
                 }
 
-    cfg = MinerConfig()
+    cfg = MinerConfig.from_dict(dict_conf=config)
 
     window["cfg_config_txt"].update(yaml.dump(cfg.as_dict(), sort_keys=False))
 
