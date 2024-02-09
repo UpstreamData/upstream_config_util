@@ -1,16 +1,15 @@
-from pyasic.miners.miner_factory import miner_factory
-from pyasic.miners.miner_listener import MinerListener
-from pyasic.miners.makes import WhatsMiner
-from upstream_config_util.general import btn_all
-from upstream_config_util.layout import window, update_prog_bar, WINDOW_ICON
-from upstream_config_util.tables import TableManager, TABLE_MANAGER
-from upstream_config_util.decorators import disable_buttons
-import settings
+import asyncio
 from typing import Tuple
 
 import PySimpleGUI as sg
 
-import asyncio
+import settings
+from pyasic.miners.factory import miner_factory
+from pyasic.miners.listener import MinerListener
+from upstream_config_util.decorators import disable_buttons
+from upstream_config_util.general import btn_all
+from upstream_config_util.layout import window, update_prog_bar, WINDOW_ICON
+from upstream_config_util.tables import TABLE_MANAGER
 
 
 async def handle_event(event, value):
@@ -84,6 +83,7 @@ async def btn_reboot(ip_idxs: list):
         ip = item["values"][0]
         miner = await miner_factory.get_miner(ip)
         miners.append(miner)
+        print(ip)
         for idx in ip_idxs:
             item = _table.item(iids[idx])
             ip = item["values"][0]
@@ -117,6 +117,7 @@ async def reboot_generator(miners: list):
 
 async def _reboot(miner):
     proc = await miner.reboot()
+    print(proc)
     return {"IP": miner.ip, "Status": proc}
 
 

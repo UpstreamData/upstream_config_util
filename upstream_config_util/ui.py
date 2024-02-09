@@ -5,7 +5,7 @@ import tkinter as tk
 import PySimpleGUI as sg
 import pyperclip
 
-from upstream_config_util import scan, boards, configure
+from upstream_config_util import scan, boards, configure, commands
 from upstream_config_util import tables
 from upstream_config_util.general import btn_all, btn_web, btn_refresh
 from upstream_config_util.imgs import TkImages
@@ -100,6 +100,8 @@ async def ui():
         await boards.handle_event(event, value)
 
         await configure.handle_event(event, value)
+
+        await commands.handle_event(event, value)
 
         # pools tab
         if event == "pools_all":
