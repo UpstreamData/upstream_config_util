@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "upstream_config_util"
-version = "1.2.2"
+version = "1.2.3"
 description = ""
 authors = ["UpstreamData <brett@upstreamdata.ca>"]
 readme = "README.md"
