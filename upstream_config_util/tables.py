@@ -1,4 +1,4 @@
-from PySimpleGUI import Tree
+from FreeSimpleGUI import Tree
 
 from upstream_config_util.layout import (
     MINER_COUNT_BUTTONS,
@@ -12,7 +12,7 @@ from upstream_config_util.layout import (
     WATTAGE_SELECTED_BUTTONS,
 )
 from upstream_config_util.imgs import LIGHT, FAULT_LIGHT
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import ipaddress
 
 DATA_PARSE_MAP = {
@@ -33,9 +33,9 @@ DATA_PARSE_MAP = {
         "parser": lambda x: x["hashrate"],
         "formatter": lambda x: format(
             round(float(x if x is not None else 0), 2), ".2f"
-        ).rjust(6, " "),
+        ).rjust(6, " ") + f" TH/s",
         "default": float,
-        "suffix": " TH/s",
+        "suffix": None,
         "sorter": lambda x: float(x.replace(" ", "") if isinstance(x, str) else x),
     },
     "Temp": {
@@ -208,6 +208,10 @@ class TableManager:
             self.data[data["ip"]][key] = data[key]
 
         self.update_tables()
+
+    def clear_item(self, ip: str):
+        if ip in self.data.keys():
+            self.data[ip] = {"ip": ip, "fault_light": False}
 
     def update_tables(self):
         tables = {
@@ -449,6 +453,9 @@ def update_tables(data: list or None = None):
 
 def update_item(data: dict):
     TABLE_MANAGER.update_item(data)
+
+def clear_item(ip: str):
+    TABLE_MANAGER.clear_item(ip)
 
 
 def clear_tables():

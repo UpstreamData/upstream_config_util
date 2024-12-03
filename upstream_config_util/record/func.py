@@ -1,6 +1,6 @@
 from typing import List
 from upstream_config_util.record.manager import RecordingManager
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 
 async def start_recording(

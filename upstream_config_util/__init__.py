@@ -1,7 +1,7 @@
 import asyncio
 import sys
 import logging
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 from .ui import ui
 

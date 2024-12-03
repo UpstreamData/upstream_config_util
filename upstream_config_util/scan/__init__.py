@@ -1,6 +1,7 @@
 import asyncio
 import logging
 
+from pyasic import APIError
 from pyasic.network import MinerNetwork
 from upstream_config_util import tables
 from upstream_config_util.decorators import disable_buttons
@@ -134,7 +135,10 @@ async def _scan_miners(network: MinerNetwork):
 async def _get_miner_data(miner):
     global progress_bar_len
 
-    tables.update_item(await _get_data(miner))
+    try:
+        tables.update_item(await _get_data(miner))
+    except APIError as e:
+        print(e)
 
     progress_bar_len += 1
     await update_prog_bar(progress_bar_len)

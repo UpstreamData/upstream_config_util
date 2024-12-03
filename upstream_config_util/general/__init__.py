@@ -53,7 +53,8 @@ async def btn_refresh(table, selected):
 
 
 async def update_miners_data(miners: list):
-    tables.clear_tables()
+    for ip in miners:
+        tables.clear_item(ip)
     tables.update_tables([{"ip": str(miner)} for miner in miners])
 
     global progress_bar_len

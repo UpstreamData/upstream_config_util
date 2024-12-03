@@ -2,7 +2,7 @@ import asyncio
 import sys
 import tkinter as tk
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import pyperclip
 
 from upstream_config_util import scan, boards, configure, commands

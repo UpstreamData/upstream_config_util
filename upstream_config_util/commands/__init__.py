@@ -1,7 +1,7 @@
 import asyncio
 from typing import Tuple
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 
 import settings
 from pyasic.miners.factory import miner_factory

@@ -7,11 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-matplotlib = "^3.8.2"
-reportlab = "^3.6.13"
+matplotlib = "^3.9.2"
+reportlab = "4.2.5"
 svglib = "^1.5.1"
-pyasic = "*"
-pyperclip = "^1.8.2"
+pyasic = "0.64.13"
+pyperclip = "^1.9.0"
+freesimplegui = "^5.1.1"
 
 [tool.poetry.group.dev]
 optional = true

@@ -1,6 +1,6 @@
 import asyncio
 
-import PySimpleGUI as sg
+import FreeSimpleGUI as sg
 import yaml
 
 from pyasic.config import MinerConfig
