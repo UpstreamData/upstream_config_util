@@ -1,0 +1,48 @@
+name: Build app
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  build_exe:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    name: Build app on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install poetry
+        uses: abatilo/actions-poetry@e78f54a89cb052fff327414dd9ff010b5d2b4dbd # v3.0.1
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Freeze app
+        run: |
+          if [[ ${{ matrix.os }} == macos-* ]]; then
+            python setup.py bdist_mac
+          elif [[ ${{ matrix.os }} == windows-* ]]; then
+            python setup.py bdist_msi
+          else
+            # python setup.py bdist_appimage
+            python setup.py build
+          fi
+
+      - name: Upload executable
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-${{ matrix.os }}
+          path: build/**
+          if-no-files-found: ignore
