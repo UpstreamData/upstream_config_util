@@ -33,7 +33,8 @@ DATA_PARSE_MAP = {
         "parser": lambda x: x["hashrate"],
         "formatter": lambda x: format(
             round(float(x if x is not None else 0), 2), ".2f"
-        ).rjust(6, " ") + f" TH/s",
+        ).rjust(6, " ")
+        + f" TH/s",
         "default": float,
         "suffix": None,
         "sorter": lambda x: float(x.replace(" ", "") if isinstance(x, str) else x),
@@ -389,17 +390,21 @@ class TableManager:
                 pass
         total_wattage = sum(
             [
-                self.data[ip].get("wattage")
-                if self.data[ip].get("wattage") is not None
-                else 0
+                (
+                    self.data[ip].get("wattage")
+                    if self.data[ip].get("wattage") is not None
+                    else 0
+                )
                 for ip in ips
             ]
         )
         total_wattage_limit = sum(
             [
-                self.data[ip].get("wattage_limit")
-                if self.data[ip].get("wattage_limit") is not None
-                else 0
+                (
+                    self.data[ip].get("wattage_limit")
+                    if self.data[ip].get("wattage_limit") is not None
+                    else 0
+                )
                 for ip in ips
             ]
         )
@@ -407,17 +412,21 @@ class TableManager:
 
         total_hashrate = sum(
             [
-                self.data[ip].get("hashrate")
-                if self.data[ip].get("hashrate") is not None
-                else 0
+                (
+                    self.data[ip].get("hashrate")
+                    if self.data[ip].get("hashrate") is not None
+                    else 0
+                )
                 for ip in ips
             ]
         )
         total_expected_hashrate = sum(
             [
-                self.data[ip].get("expected_hashrate")
-                if self.data[ip].get("expected_hashrate") is not None
-                else 0
+                (
+                    self.data[ip].get("expected_hashrate")
+                    if self.data[ip].get("expected_hashrate") is not None
+                    else 0
+                )
                 for ip in ips
             ]
         )
@@ -453,6 +462,7 @@ def update_tables(data: list or None = None):
 
 def update_item(data: dict):
     TABLE_MANAGER.update_item(data)
+
 
 def clear_item(ip: str):
     TABLE_MANAGER.clear_item(ip)

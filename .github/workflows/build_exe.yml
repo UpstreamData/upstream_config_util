@@ -30,12 +30,7 @@ jobs:
 
       - name: Freeze app
         run: |
-          if [[ ${{ matrix.os }} == windows-* ]]; then
-            python setup.py bdist_msi
-          else
-            # python setup.py bdist_appimage
-            python setup.py build
-          fi
+          poetry run cxfreeze build
 
       - name: Upload executable
         if: ${{ always() }}
