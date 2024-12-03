@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "upstream_config_util"
-version = "1.2.4rc2"
+version = "1.2.4rc3"
 description = ""
 authors = ["UpstreamData <brett@upstreamdata.ca>"]
 readme = "README.md"
@@ -13,6 +13,7 @@ svglib = "^1.5.1"
 pyasic = "0.64.13"
 pyperclip = "^1.9.0"
 freesimplegui = "^5.1.1"
+toml = "^0.10.2"
 
 [tool.poetry.group.dev]
 optional = true
