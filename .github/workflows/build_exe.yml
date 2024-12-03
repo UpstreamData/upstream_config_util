@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest]
     name: Build app on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     defaults:
@@ -30,9 +30,7 @@ jobs:
 
       - name: Freeze app
         run: |
-          if [[ ${{ matrix.os }} == macos-* ]]; then
-            python setup.py bdist_mac
-          elif [[ ${{ matrix.os }} == windows-* ]]; then
+          if [[ ${{ matrix.os }} == windows-* ]]; then
             python setup.py bdist_msi
           else
             # python setup.py bdist_appimage
